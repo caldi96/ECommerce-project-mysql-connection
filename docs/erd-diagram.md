@@ -169,7 +169,7 @@ Table user_coupons {
     status varchar [not null, default: 'AVAILABLE'] // AVAILABLE, USED, EXPIRED
     usedCount int
     used_at timestamp  // 사용 시간
-    expired_at timestamp [not null]  // 만료 시간
+    expired_at timestamp  // 만료 시간
     issued_at timestamp [not null, default: `now()`]  // 발급 시간
     indexes {
         (user_id, coupon_id)
