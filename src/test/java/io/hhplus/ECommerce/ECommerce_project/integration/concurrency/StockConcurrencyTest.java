@@ -3,7 +3,7 @@ package io.hhplus.ECommerce.ECommerce_project.integration.concurrency;
 import io.hhplus.ECommerce.ECommerce_project.order.application.CreateOrderFromProductUseCase;
 import io.hhplus.ECommerce.ECommerce_project.order.application.command.CreateOrderFromProductCommand;
 import io.hhplus.ECommerce.ECommerce_project.product.domain.entity.Product;
-import io.hhplus.ECommerce.ECommerce_project.product.domain.repository.ProductRepository;
+import io.hhplus.ECommerce.ECommerce_project.product.domain.repository.ProductRepositoryInMemory;
 import io.hhplus.ECommerce.ECommerce_project.user.domain.entity.User;
 import io.hhplus.ECommerce.ECommerce_project.user.domain.repository.UserRepository;
 import org.junit.jupiter.api.BeforeEach;
@@ -35,7 +35,7 @@ public class StockConcurrencyTest {
     private CreateOrderFromProductUseCase createOrderFromProductUseCase;
 
     @Autowired
-    private ProductRepository productRepository;
+    private ProductRepositoryInMemory productRepository;
 
     @Autowired
     private UserRepository userRepository;
@@ -69,7 +69,6 @@ public class StockConcurrencyTest {
         LocalDateTime now = LocalDateTime.now();
         for (int i = 0; i < totalThreads; i++) {
             users[i] = new User(
-                    null,  // id
                     "concurrency_user_" + i,  // username
                     "password",  // password
                     BigDecimal.ZERO,  // pointBalance
@@ -143,7 +142,6 @@ public class StockConcurrencyTest {
         // 테스트 사용자 생성
         LocalDateTime now = LocalDateTime.now();
         User user = new User(
-                null,  // id
                 "same_user_test",  // username
                 "password",  // password
                 BigDecimal.ZERO,  // pointBalance
@@ -216,7 +214,6 @@ public class StockConcurrencyTest {
         LocalDateTime now = LocalDateTime.now();
         for (int i = 0; i < totalOrders; i++) {
             users[i] = new User(
-                    null,  // id
                     "limited_user_" + i,  // username
                     "password",  // password
                     BigDecimal.ZERO,  // pointBalance

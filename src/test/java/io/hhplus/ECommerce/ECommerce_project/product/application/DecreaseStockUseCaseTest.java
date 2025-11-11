@@ -4,7 +4,7 @@ import io.hhplus.ECommerce.ECommerce_project.common.exception.ErrorCode;
 import io.hhplus.ECommerce.ECommerce_project.common.exception.ProductException;
 import io.hhplus.ECommerce.ECommerce_project.product.application.command.DecreaseStockCommand;
 import io.hhplus.ECommerce.ECommerce_project.product.domain.entity.Product;
-import io.hhplus.ECommerce.ECommerce_project.product.domain.repository.ProductRepository;
+import io.hhplus.ECommerce.ECommerce_project.product.domain.repository.ProductRepositoryInMemory;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -17,7 +17,7 @@ import static org.mockito.Mockito.*;
 
 public class DecreaseStockUseCaseTest {
 
-    private final ProductRepository productRepository = mock(ProductRepository.class);
+    private final ProductRepositoryInMemory productRepository = mock(ProductRepositoryInMemory.class);
     private final DecreaseStockUseCase useCase = new DecreaseStockUseCase(productRepository);
 
     /**
@@ -56,7 +56,7 @@ public class DecreaseStockUseCaseTest {
 
             // then
             assertThat(result.getStock()).isEqualTo(7);
-            assertThat(result.isSoldOutProduct()).isFalse();
+            assertThat(result.isOutOfStock()).isFalse();
             verify(productRepository).save(product);
         }
 
@@ -75,7 +75,7 @@ public class DecreaseStockUseCaseTest {
 
             // then
             assertThat(result.getStock()).isEqualTo(0);
-            assertThat(result.isSoldOutProduct()).isTrue(); // 품절 상태
+            assertThat(result.isOutOfStock()).isTrue(); // 품절 상태
             verify(productRepository).save(product);
         }
     }

@@ -1,13 +1,12 @@
 package io.hhplus.ECommerce.ECommerce_project.cart.application;
 
 import io.hhplus.ECommerce.ECommerce_project.cart.domain.entity.Cart;
-import io.hhplus.ECommerce.ECommerce_project.cart.domain.repository.CartRepository;
+import io.hhplus.ECommerce.ECommerce_project.cart.domain.repository.CartRepositoryInMemory;
 import io.hhplus.ECommerce.ECommerce_project.common.exception.CartException;
 import io.hhplus.ECommerce.ECommerce_project.common.exception.ErrorCode;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import java.time.LocalDateTime;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.*;
@@ -15,12 +14,12 @@ import static org.mockito.Mockito.*;
 
 public class DeleteCartUseCaseTest {
 
-    private CartRepository cartRepository;
+    private CartRepositoryInMemory cartRepository;
     private DeleteCartUseCase deleteCartUseCase;
 
     @BeforeEach
     void setUp() {
-        cartRepository = mock(CartRepository.class);
+        cartRepository = mock(CartRepositoryInMemory.class);
         deleteCartUseCase = new DeleteCartUseCase(cartRepository);
     }
 

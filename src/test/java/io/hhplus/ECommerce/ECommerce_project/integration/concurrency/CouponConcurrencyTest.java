@@ -12,7 +12,7 @@ import io.hhplus.ECommerce.ECommerce_project.coupon.domain.repository.UserCoupon
 import io.hhplus.ECommerce.ECommerce_project.order.application.CreateOrderFromProductUseCase;
 import io.hhplus.ECommerce.ECommerce_project.order.application.command.CreateOrderFromProductCommand;
 import io.hhplus.ECommerce.ECommerce_project.product.domain.entity.Product;
-import io.hhplus.ECommerce.ECommerce_project.product.domain.repository.ProductRepository;
+import io.hhplus.ECommerce.ECommerce_project.product.domain.repository.ProductRepositoryInMemory;
 import io.hhplus.ECommerce.ECommerce_project.user.domain.entity.User;
 import io.hhplus.ECommerce.ECommerce_project.user.domain.repository.UserRepository;
 import org.junit.jupiter.api.BeforeEach;
@@ -53,7 +53,7 @@ public class CouponConcurrencyTest {
     private UserCouponRepository userCouponRepository;
 
     @Autowired
-    private ProductRepository productRepository;
+    private ProductRepositoryInMemory productRepository;
 
     @Autowired
     private UserRepository userRepository;
@@ -103,7 +103,6 @@ public class CouponConcurrencyTest {
         LocalDateTime now = LocalDateTime.now();
         for (int i = 0; i < userCount; i++) {
             users[i] = new User(
-                    null,  // id
                     "coupon_user_" + i,  // username
                     "password",  // password
                     BigDecimal.ZERO,  // pointBalance
@@ -179,7 +178,6 @@ public class CouponConcurrencyTest {
         // 테스트 사용자 생성
         LocalDateTime now = LocalDateTime.now();
         User user = new User(
-                null,  // id
                 "same_user_coupon",  // username
                 "password",  // password
                 BigDecimal.ZERO,  // pointBalance
@@ -266,7 +264,6 @@ public class CouponConcurrencyTest {
         LocalDateTime now = LocalDateTime.now();
         for (int i = 0; i < userCount; i++) {
             users[i] = new User(
-                    null,  // id
                     "multi_coupon_user_" + i,  // username
                     "password",  // password
                     BigDecimal.ZERO,  // pointBalance
@@ -347,7 +344,6 @@ public class CouponConcurrencyTest {
         // 테스트 사용자 1명 생성
         LocalDateTime now = LocalDateTime.now();
         User sameUser = new User(
-                null,  // id
                 "duplicate_test_user",  // username
                 "password",  // password
                 BigDecimal.ZERO,  // pointBalance

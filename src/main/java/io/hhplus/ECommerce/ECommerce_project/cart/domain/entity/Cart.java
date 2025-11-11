@@ -1,32 +1,42 @@
 package io.hhplus.ECommerce.ECommerce_project.cart.domain.entity;
 
+import io.hhplus.ECommerce.ECommerce_project.common.entity.BaseEntity;
 import io.hhplus.ECommerce.ECommerce_project.common.exception.CartException;
 import io.hhplus.ECommerce.ECommerce_project.common.exception.ErrorCode;
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import io.hhplus.ECommerce.ECommerce_project.product.domain.entity.Product;
+import io.hhplus.ECommerce.ECommerce_project.user.domain.entity.User;
+import jakarta.persistence.*;
+import lombok.*;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.LocalDateTime;
 
+@Entity
+@Table(name = "carts")
 @Getter
+@Setter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)  // JPA를 위한 기본 생성자
 @AllArgsConstructor(access = AccessLevel.PRIVATE)    // 정적 팩토리 메서드를 위한 private 생성자
-public class Cart {
+public class Cart extends BaseEntity {
 
-    private Long id;
-    // 나중에 JPA 연결 시
-    // @ManyToOne(fetch = FetchType.LAZY)
-    // @JoinColumn(name = "user_id")
-    // private User user;
-    private Long userId;
-    // 나중에 JPA 연결 시
-    // @ManyToOne(fetch = FetchType.LAZY)
-    // @JoinColumn(name = "product_id")
-    // private Product product;
-    private Long productId;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id", nullable = false)
+    private User user;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "product_id", nullable = false)
+    private Product product;
+
+    @Column(nullable = false)
     private int quantity;
+
+    @CreationTimestamp
+    @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt;
+
+    @UpdateTimestamp
+    @Column(name = "updated_at", nullable = false)
     private LocalDateTime updatedAt;
 
     // ===== 정적 팩토리 메서드 =====
@@ -34,19 +44,21 @@ public class Cart {
     /**
      * 장바구니 아이템 생성
      */
-    public static Cart createCart(Long userId, Long productId, int quantity) {
-        validateUserId(userId);
-        validateProductId(productId);
+    public static Cart createCart(
+            User user,
+            Product product,
+            int quantity
+    ) {
+        validateUserId(user.getId());
+        validateProductId(product.getId());
         validateQuantity(quantity);
 
-        LocalDateTime now = LocalDateTime.now();
         return new Cart(
-            null,  // id는 저장 시 생성
-            userId,
-            productId,
+            user,
+            product,
             quantity,
-            now,   // createdAt
-            now    // updatedAt
+            null,   // createdAt
+            null    // updatedAt
         );
     }
 
@@ -57,7 +69,6 @@ public class Cart {
      */
     public void increaseQuantity() {
         this.quantity++;
-        this.updatedAt = LocalDateTime.now();
     }
 
     /**
@@ -68,7 +79,6 @@ public class Cart {
             throw new CartException(ErrorCode.CART_INCREASE_AMOUNT_INVALID);
         }
         this.quantity += amount;
-        this.updatedAt = LocalDateTime.now();
     }
 
     /**
@@ -79,7 +89,6 @@ public class Cart {
             throw new CartException(ErrorCode.CART_QUANTITY_CANNOT_BE_LESS_THAN_ONE);
         }
         this.quantity--;
-        this.updatedAt = LocalDateTime.now();
     }
 
     /**
@@ -93,7 +102,6 @@ public class Cart {
             throw new CartException(ErrorCode.CART_QUANTITY_CANNOT_BE_LESS_THAN_ONE);
         }
         this.quantity -= amount;
-        this.updatedAt = LocalDateTime.now();
     }
 
     /**
@@ -102,7 +110,6 @@ public class Cart {
     public void changeQuantity(int quantity) {
         validateQuantity(quantity);
         this.quantity = quantity;
-        this.updatedAt = LocalDateTime.now();
     }
 
     // ===== 상태 확인 메서드 =====
@@ -111,14 +118,14 @@ public class Cart {
      * 동일한 상품인지 확인
      */
     public boolean isSameProduct(Long productId) {
-        return this.productId.equals(productId);
+        return this.product.getId().equals(productId);
     }
 
     /**
      * 동일한 사용자의 장바구니인지 확인
      */
     public boolean isSameUser(Long userId) {
-        return this.userId.equals(userId);
+        return this.user.getId().equals(userId);
     }
 
     // ===== Validation 메서드 =====
@@ -139,10 +146,5 @@ public class Cart {
         if (quantity < 1) {
             throw new CartException(ErrorCode.CART_QUANTITY_INVALID);
         }
-    }
-
-    // ===== 테스트를 위한 ID 설정 메서드 (인메모리 DB용) =====
-    public void setId(Long id) {
-        this.id = id;
     }
 }

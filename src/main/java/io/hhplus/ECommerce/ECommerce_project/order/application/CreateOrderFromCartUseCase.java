@@ -16,7 +16,7 @@ import io.hhplus.ECommerce.ECommerce_project.order.domain.repository.OrderReposi
 import io.hhplus.ECommerce.ECommerce_project.order.presentation.response.CreateOrderFromCartResponse;
 import io.hhplus.ECommerce.ECommerce_project.point.domain.entity.Point;
 import io.hhplus.ECommerce.ECommerce_project.point.domain.entity.PointUsageHistory;
-import io.hhplus.ECommerce.ECommerce_project.point.domain.repository.PointRepository;
+import io.hhplus.ECommerce.ECommerce_project.point.domain.repository.PointMemoryRepository;
 import io.hhplus.ECommerce.ECommerce_project.point.domain.repository.PointUsageHistoryRepository;
 import io.hhplus.ECommerce.ECommerce_project.product.domain.entity.Product;
 import io.hhplus.ECommerce.ECommerce_project.product.domain.repository.ProductRepository;
@@ -43,7 +43,7 @@ public class CreateOrderFromCartUseCase {
     private final ProductRepository productRepository;
     private final CouponRepository couponRepository;
     private final UserCouponRepository userCouponRepository;
-    private final PointRepository pointRepository;
+    private final PointMemoryRepository pointRepository;
     private final PointUsageHistoryRepository pointUsageHistoryRepository;
 
     @Transactional
@@ -100,7 +100,7 @@ public class CreateOrderFromCartUseCase {
         Map<Long, Integer> productOrderQuantityMap = new HashMap<>();
         for (Cart cart : cartList) {
             productOrderQuantityMap.merge(
-                cart.getProductId(),
+                cart.getProduct().getId(),
                 cart.getQuantity(),
                 Integer::sum
             );
@@ -243,8 +243,8 @@ public class CreateOrderFromCartUseCase {
 
                 // 10-3. PointUsageHistory 생성 (주문과 포인트 연결 추적용)
                 PointUsageHistory history = PointUsageHistory.create(
-                    originalPoint.getId(),
-                    savedOrder.getId(),
+                    originalPoint,
+                    savedOrder,
                     usageAmount
                 );
                 pointUsageHistoryRepository.save(history);
@@ -269,7 +269,7 @@ public class CreateOrderFromCartUseCase {
         // 11. OrderItem 생성
         List<OrderItem> orderItems = new ArrayList<>();
         for (Cart cart : cartList) {
-            Product product = productMap.get(cart.getProductId());
+            Product product = productMap.get(cart.getProduct().getId());
 
             OrderItem orderItem = OrderItem.createOrderItem(
                     savedOrder.getId(),
@@ -296,7 +296,7 @@ public class CreateOrderFromCartUseCase {
         BigDecimal totalAmount = BigDecimal.ZERO;
 
         for (Cart cart : cartList) {
-            Product product = productMap.get(cart.getProductId());
+            Product product = productMap.get(cart.getProduct().getId());
 
             BigDecimal itemTotalAmount = product.getPrice()
                     .multiply(BigDecimal.valueOf(cart.getQuantity()));

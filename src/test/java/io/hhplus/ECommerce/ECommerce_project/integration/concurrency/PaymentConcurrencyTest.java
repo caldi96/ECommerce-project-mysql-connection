@@ -10,7 +10,7 @@ import io.hhplus.ECommerce.ECommerce_project.payment.application.CreatePaymentUs
 import io.hhplus.ECommerce.ECommerce_project.payment.application.command.CreatePaymentCommand;
 import io.hhplus.ECommerce.ECommerce_project.payment.domain.enums.PaymentMethod;
 import io.hhplus.ECommerce.ECommerce_project.product.domain.entity.Product;
-import io.hhplus.ECommerce.ECommerce_project.product.domain.repository.ProductRepository;
+import io.hhplus.ECommerce.ECommerce_project.product.domain.repository.ProductRepositoryInMemory;
 import io.hhplus.ECommerce.ECommerce_project.user.domain.entity.User;
 import io.hhplus.ECommerce.ECommerce_project.user.domain.repository.UserRepository;
 import org.junit.jupiter.api.BeforeEach;
@@ -48,7 +48,7 @@ public class PaymentConcurrencyTest {
     private OrderRepository orderRepository;
 
     @Autowired
-    private ProductRepository productRepository;
+    private ProductRepositoryInMemory productRepository;
 
     @Autowired
     private UserRepository userRepository;
@@ -61,7 +61,6 @@ public class PaymentConcurrencyTest {
         // 테스트용 사용자 생성
         LocalDateTime now = LocalDateTime.now();
         testUser = new User(
-                null,  // id
                 "payment_test_user",  // username
                 "password",  // password
                 BigDecimal.ZERO,  // pointBalance
@@ -157,7 +156,6 @@ public class PaymentConcurrencyTest {
         for (int i = 0; i < orderCount; i++) {
             LocalDateTime now = LocalDateTime.now();
             User user = new User(
-                    null,  // id
                     "multi_payment_user_" + i,  // username
                     "password",  // password
                     BigDecimal.ZERO,  // pointBalance
@@ -240,7 +238,6 @@ public class PaymentConcurrencyTest {
                 try {
                     LocalDateTime now = LocalDateTime.now();
                     User user = new User(
-                            null,  // id
                             "concurrent_user_" + index,  // username
                             "password",  // password
                             BigDecimal.ZERO,  // pointBalance

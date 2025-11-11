@@ -30,7 +30,7 @@ public class ProductEntityTest {
         assertThat(p.getCategoryId()).isEqualTo(1L);
         assertThat(p.getStock()).isEqualTo(10);
         assertThat(p.isActive()).isTrue();
-        assertThat(p.isSoldOutProduct()).isFalse();
+        assertThat(p.isOutOfStock()).isFalse();
     }
 
     @Test
@@ -105,7 +105,7 @@ public class ProductEntityTest {
         p.decreaseStock(5);
 
         assertThat(p.getStock()).isEqualTo(0);
-        assertThat(p.isSoldOutProduct()).isTrue();
+        assertThat(p.isOutOfStock()).isTrue();
     }
 
     @Test
@@ -124,7 +124,7 @@ public class ProductEntityTest {
         p.increaseStock(5);
 
         assertThat(p.getStock()).isEqualTo(5);
-        assertThat(p.isSoldOutProduct()).isFalse();
+        assertThat(p.isOutOfStock()).isFalse();
     }
 
     @Test
@@ -134,7 +134,7 @@ public class ProductEntityTest {
         p.updateStock(0);
 
         assertThat(p.getStock()).isEqualTo(0);
-        assertThat(p.isSoldOutProduct()).isTrue();
+        assertThat(p.isOutOfStock()).isTrue();
     }
 
     // ---------- 판매량 ----------
@@ -179,26 +179,21 @@ public class ProductEntityTest {
                 .isInstanceOf(ProductException.class);
     }
 
-    // ---------- 품절 ----------
+    // ---------- 품절 (계산 메서드) ----------
     @Test
-    @DisplayName("수동 품절 처리")
-    void outOfStockSuccess() {
-        Product p = Product.createProduct("상품", 1L, "d", BigDecimal.valueOf(1000), 10, 1, 10);
+    @DisplayName("재고가 0이면 품절 상태")
+    void isOutOfStockWhenStockIsZero() {
+        Product p = Product.createProduct("상품", 1L, "d", BigDecimal.valueOf(1000), 0, 1, 10);
 
-        p.outOfStock();
-        assertThat(p.isSoldOutProduct()).isTrue();
+        assertThat(p.isOutOfStock()).isTrue();
     }
 
     @Test
-    @DisplayName("품절 해제 시 재고가 0이면 예외")
-    void backInStockFail_zeroStock() {
-        // given
-        Product product = Product.createProduct(
-                "상품명", 1L, "설명", new BigDecimal("1000"), 0, null, null
-        );
+    @DisplayName("재고가 1 이상이면 품절 아님")
+    void isNotOutOfStockWhenStockIsPositive() {
+        Product p = Product.createProduct("상품", 1L, "d", BigDecimal.valueOf(1000), 1, 1, 10);
 
-        // when & then
-        assertThrows(ProductException.class, () -> product.backInStock());
+        assertThat(p.isOutOfStock()).isFalse();
     }
 
     // ---------- 삭제 ----------

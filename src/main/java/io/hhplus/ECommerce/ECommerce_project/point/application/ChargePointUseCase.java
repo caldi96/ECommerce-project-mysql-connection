@@ -34,7 +34,7 @@ public class ChargePointUseCase {
 
         // 3. Point 엔티티 생성 및 저장
         Point point = Point.charge(
-                command.userId(),
+                user,
                 command.amount(),
                 command.description()
         );
@@ -42,7 +42,6 @@ public class ChargePointUseCase {
 
         // 4. User의 포인트 잔액 업데이트
         user.chargePoint(command.amount());
-        userRepository.save(user);
 
         // 5. 저장된 포인트 반환
         return savedPoint;

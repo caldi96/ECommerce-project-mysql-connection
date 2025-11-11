@@ -12,15 +12,14 @@ import io.hhplus.ECommerce.ECommerce_project.order.domain.repository.OrderItemRe
 import io.hhplus.ECommerce.ECommerce_project.order.domain.repository.OrderRepository;
 import io.hhplus.ECommerce.ECommerce_project.point.domain.entity.Point;
 import io.hhplus.ECommerce.ECommerce_project.point.domain.entity.PointUsageHistory;
-import io.hhplus.ECommerce.ECommerce_project.point.domain.repository.PointRepository;
-import io.hhplus.ECommerce.ECommerce_project.point.domain.repository.PointUsageHistoryRepository;
+import io.hhplus.ECommerce.ECommerce_project.point.domain.repository.PointMemoryRepository;
+import io.hhplus.ECommerce.ECommerce_project.point.domain.repository.PointUsageHistoryMemoryRepository;
 import io.hhplus.ECommerce.ECommerce_project.product.domain.entity.Product;
-import io.hhplus.ECommerce.ECommerce_project.product.domain.repository.ProductRepository;
+import io.hhplus.ECommerce.ECommerce_project.product.domain.repository.ProductRepositoryInMemory;
 import io.hhplus.ECommerce.ECommerce_project.user.domain.entity.User;
 import io.hhplus.ECommerce.ECommerce_project.user.domain.repository.UserRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
@@ -40,15 +39,15 @@ class CancelOrderUseCaseTest {
     @Mock
     private OrderItemRepository orderItemRepository;
     @Mock
-    private ProductRepository productRepository;
+    private ProductRepositoryInMemory productRepository;
     @Mock
     private CouponRepository couponRepository;
     @Mock
     private UserCouponRepository userCouponRepository;
     @Mock
-    private PointRepository pointRepository;
+    private PointMemoryRepository pointRepository;
     @Mock
-    private PointUsageHistoryRepository pointUsageHistoryRepository;
+    private PointUsageHistoryMemoryRepository pointUsageHistoryRepository;
     @Mock
     private UserRepository userRepository;
 

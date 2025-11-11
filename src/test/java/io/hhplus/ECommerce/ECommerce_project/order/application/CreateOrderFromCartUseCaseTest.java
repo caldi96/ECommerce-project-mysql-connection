@@ -1,13 +1,13 @@
 package io.hhplus.ECommerce.ECommerce_project.order.application;
 
 import io.hhplus.ECommerce.ECommerce_project.cart.domain.entity.Cart;
-import io.hhplus.ECommerce.ECommerce_project.cart.domain.repository.CartRepository;
+import io.hhplus.ECommerce.ECommerce_project.cart.domain.repository.CartRepositoryInMemory;
 import io.hhplus.ECommerce.ECommerce_project.common.exception.PointException;
 import io.hhplus.ECommerce.ECommerce_project.order.application.command.CreateOrderFromCartCommand;
 import io.hhplus.ECommerce.ECommerce_project.point.domain.entity.Point;
-import io.hhplus.ECommerce.ECommerce_project.point.domain.repository.PointRepository;
+import io.hhplus.ECommerce.ECommerce_project.point.domain.repository.PointMemoryRepository;
 import io.hhplus.ECommerce.ECommerce_project.product.domain.entity.Product;
-import io.hhplus.ECommerce.ECommerce_project.product.domain.repository.ProductRepository;
+import io.hhplus.ECommerce.ECommerce_project.product.domain.repository.ProductRepositoryInMemory;
 import io.hhplus.ECommerce.ECommerce_project.user.domain.entity.User;
 import io.hhplus.ECommerce.ECommerce_project.user.domain.repository.UserRepository;
 import org.junit.jupiter.api.BeforeEach;
@@ -25,16 +25,16 @@ class CreateOrderFromCartUseCaseTest {
 
     private CreateOrderFromCartUseCase useCase;
     private UserRepository userRepository;
-    private CartRepository cartRepository;
-    private ProductRepository productRepository;
-    private PointRepository pointRepository;
+    private CartRepositoryInMemory cartRepository;
+    private ProductRepositoryInMemory productRepository;
+    private PointMemoryRepository pointRepository;
 
     @BeforeEach
     void setup() {
         userRepository = mock(UserRepository.class);
-        cartRepository = mock(CartRepository.class);
-        productRepository = mock(ProductRepository.class);
-        pointRepository = mock(PointRepository.class);
+        cartRepository = mock(CartRepositoryInMemory.class);
+        productRepository = mock(ProductRepositoryInMemory.class);
+        pointRepository = mock(PointMemoryRepository.class);
 
         useCase = new CreateOrderFromCartUseCase(
                 null, null, userRepository, cartRepository,
@@ -65,7 +65,7 @@ class CreateOrderFromCartUseCaseTest {
         when(product.getPrice()).thenReturn(BigDecimal.valueOf(100));
         when(product.getName()).thenReturn("상품1");
         when(product.canOrder(anyInt())).thenReturn(true);  // 중요: 상품 검증 통과
-        when(productRepository.findByIdWithLock(productId)).thenReturn(Optional.of(product));
+        when(productRepository.decreaseStockWithLock(productId, 1)).thenReturn(product);
 
         // 4. 포인트 Mock (사용 가능 포인트 부족)
         Point point = mock(Point.class);
@@ -82,7 +82,7 @@ class CreateOrderFromCartUseCaseTest {
         // 7. verify
         verify(userRepository).findById(userId);
         verify(cartRepository).findById(cartId);
-        verify(productRepository).findByIdWithLock(productId);
+        verify(productRepository).decreaseStockWithLock(productId, 1);
         verify(pointRepository).findAvailablePointsByUserId(userId);
     }
 }

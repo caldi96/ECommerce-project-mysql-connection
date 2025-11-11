@@ -1,7 +1,7 @@
 package io.hhplus.ECommerce.ECommerce_project.point.application;
 
 import io.hhplus.ECommerce.ECommerce_project.point.domain.entity.Point;
-import io.hhplus.ECommerce.ECommerce_project.point.domain.repository.PointRepository;
+import io.hhplus.ECommerce.ECommerce_project.point.domain.repository.PointMemoryRepository;
 import io.hhplus.ECommerce.ECommerce_project.point.presentation.response.GetPointHistoryResponse;
 import io.hhplus.ECommerce.ECommerce_project.user.domain.entity.User;
 import io.hhplus.ECommerce.ECommerce_project.user.domain.repository.UserRepository;
@@ -19,13 +19,13 @@ import static org.mockito.Mockito.when;
 
 class GetPointHistoryUseCaseTest {
 
-    private PointRepository pointRepository;
+    private PointMemoryRepository pointRepository;
     private UserRepository userRepository;
     private GetPointHistoryUseCase getPointHistoryUseCase;
 
     @BeforeEach
     void setUp() {
-        pointRepository = mock(PointRepository.class);
+        pointRepository = mock(PointMemoryRepository.class);
         userRepository = mock(UserRepository.class);
         getPointHistoryUseCase = new GetPointHistoryUseCase(pointRepository, userRepository);
     }
@@ -34,8 +34,9 @@ class GetPointHistoryUseCaseTest {
     void testGetPointHistory_Success() {
         Long userId = 1L;
 
-        User user = new User(userId, "testUser", "password", BigDecimal.valueOf(1000),
+        User user = new User("testUser", "password", BigDecimal.valueOf(1000),
                 LocalDateTime.now(), LocalDateTime.now());
+        user.setId(userId);
         when(userRepository.findById(userId)).thenReturn(Optional.of(user));
 
         Point point1 = Point.charge(userId, BigDecimal.valueOf(100), "충전1");

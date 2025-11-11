@@ -1,25 +1,30 @@
 package io.hhplus.ECommerce.ECommerce_project.category.domain.repository;
 
 import io.hhplus.ECommerce.ECommerce_project.category.domain.entity.Category;
+import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;
 import java.util.Optional;
 
-public interface CategoryRepository {
+public interface CategoryRepository extends JpaRepository<Category, Long> {
 
-    Category save(Category category);
+    // ID로 조회 (삭제되지 않은 카테고리만)
+    Optional<Category> findByIdAndDeletedAtIsNull(Long id);
 
-    Optional<Category> findById(Long id);
+    // 삭제되지 않은 전체 카테고리 조회
+    List<Category> findAllByDeletedAtIsNull();
 
-    List<Category> findAll();
+    // 카테고리명 중복 체크(삭제되지 않은 것만)
+    boolean existsByCategoryNameAndDeletedAtIsNull(String name);
 
-    boolean existsByCategoryName(String name);
+    // 표시 순서 중복 체크(삭제되지 않은 것만)
+    boolean existsByDisplayOrderAndDeletedAtIsNull(int displayOrder);
 
-    boolean existsByDisplayOrder(int displayOrder);
+    // 서로 다른 id를 가진 카테고리중 같은 이름이 있는지 확인(삭제되지 않은 것만)
+    boolean existsByCategoryNameAndIdNotAndDeletedAtIsNull(String categoryName, Long excludedId);
 
-    boolean existsByCategoryNameExceptId(String name, Long excludedId);
+    // 서로 다른 id를 가진 카테고리중 같은 표시 순서가 있는지 확인(삭제되지 않은 것만)
+    boolean existsByDisplayOrderAndIdNotAndDeletedAtIsNull(int displayOrder, Long excludedId);
 
-    boolean existsByDisplayOrderExceptId(int displayOrder, Long excludedId);
 
-    void deleteById(Long id);
 }

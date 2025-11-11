@@ -3,7 +3,7 @@ package io.hhplus.ECommerce.ECommerce_project.product.infrastructure;
 import io.hhplus.ECommerce.ECommerce_project.common.SnowflakeIdGenerator;
 import io.hhplus.ECommerce.ECommerce_project.product.application.enums.ProductSortType;
 import io.hhplus.ECommerce.ECommerce_project.product.domain.entity.Product;
-import io.hhplus.ECommerce.ECommerce_project.product.domain.repository.ProductRepository;
+import io.hhplus.ECommerce.ECommerce_project.product.domain.repository.ProductRepositoryInMemory;
 import io.hhplus.ECommerce.ECommerce_project.common.exception.OrderException;
 import io.hhplus.ECommerce.ECommerce_project.common.exception.ErrorCode;
 import lombok.RequiredArgsConstructor;
@@ -11,11 +11,10 @@ import org.springframework.stereotype.Repository;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.stream.Collectors;
 
 @Repository
 @RequiredArgsConstructor
-public class ProductMemoryRepository implements ProductRepository {
+public class ProductMemoryRepository implements ProductRepositoryInMemory {
     private final Map<Long, Product> productMap = new ConcurrentHashMap<>();
     private final Map<Long, Object> lockMap = new ConcurrentHashMap<>(); // 상품별 락 객체
     private final SnowflakeIdGenerator idGenerator;
@@ -134,7 +133,7 @@ public class ProductMemoryRepository implements ProductRepository {
         var stream = productMap.values().stream()
                 .filter(Product::isActive)
                 .filter(product -> product.getDeletedAt() == null)
-                .filter(product -> categoryId == null || categoryId.equals(product.getCategoryId()));
+                .filter(product -> categoryId == null || categoryId.equals(product.getCategory().getId()));
 
         // 3. 정렬
         Comparator<Product> comparator = getComparator(sortType);
@@ -154,7 +153,7 @@ public class ProductMemoryRepository implements ProductRepository {
                 .filter(product -> product.getDeletedAt() == null);
 
         if (categoryId != null) {
-            stream = stream.filter(product -> categoryId.equals(product.getCategoryId()));
+            stream = stream.filter(product -> categoryId.equals(product.getCategory().getId()));
         }
 
         return stream.count();

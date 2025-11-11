@@ -28,8 +28,8 @@ public record CreateProductRequest(
 ) {
     public CreateProductCommand toCommand() {
         return new CreateProductCommand(
-                name,
                 categoryId,
+                name,
                 description,
                 price,
                 stock,

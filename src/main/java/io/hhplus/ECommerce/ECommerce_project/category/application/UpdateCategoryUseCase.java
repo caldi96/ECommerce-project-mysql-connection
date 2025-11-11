@@ -13,21 +13,21 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class UpdateCategoryUseCase {
 
-    public final CategoryRepository categoryRepository;
+    private final CategoryRepository categoryRepository;
 
     @Transactional
     public Category execute(UpdateCategoryCommand command) {
         // 1. 카테고리 존재 유무
-        Category category = categoryRepository.findById(command.id())
+        Category category = categoryRepository.findByIdAndDeletedAtIsNull(command.id())
                 .orElseThrow(() -> new CategoryException(ErrorCode.CATEGORY_NOT_FOUND));
 
         // 2. 카테고리명 중복 체크
-        if (categoryRepository.existsByCategoryNameExceptId(command.name(), command.id())) {
+        if (categoryRepository.existsByCategoryNameAndIdNotAndDeletedAtIsNull(command.name(), command.id())) {
             throw new CategoryException(ErrorCode.CATEGORY_NAME_DUPLICATED);
         }
 
         // 3. 표시 순서 중복 체크
-        if (categoryRepository.existsByDisplayOrderExceptId(command.displayOrder(), command.id())) {
+        if (categoryRepository.existsByDisplayOrderAndIdNotAndDeletedAtIsNull(command.displayOrder(), command.id())) {
             throw new CategoryException(ErrorCode.DISPLAY_ORDER_DUPLICATED);
         }
 
@@ -35,6 +35,6 @@ public class UpdateCategoryUseCase {
         category.updateCategoryName(command.name());
         category.updateDisplayOrder(command.displayOrder());
 
-        return categoryRepository.save(category);
+        return category;
     }
 }

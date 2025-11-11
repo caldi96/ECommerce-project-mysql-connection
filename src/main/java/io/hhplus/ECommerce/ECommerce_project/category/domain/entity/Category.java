@@ -1,25 +1,41 @@
 package io.hhplus.ECommerce.ECommerce_project.category.domain.entity;
 
+import io.hhplus.ECommerce.ECommerce_project.common.entity.BaseEntity;
 import io.hhplus.ECommerce.ECommerce_project.common.exception.CategoryException;
 import io.hhplus.ECommerce.ECommerce_project.common.exception.ErrorCode;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.LocalDateTime;
 
+@Entity
+@Table(name = "categories")
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class Category {
+public class Category extends BaseEntity {
 
-    private Long id;
+    @Column(name = "category_name", nullable = false, unique = true)
     private String categoryName;
+
+    @Column(name = "display_order", nullable = false)
     private int displayOrder;
+
+    @CreationTimestamp
+    @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt;
+
+    @UpdateTimestamp
+    @Column(name = "updated_at", nullable = false)
     private LocalDateTime updatedAt;
+
+    @Column(name = "deleted_at")
     private LocalDateTime deletedAt;  // 논리적 삭제용
 
     // ===== 정적 팩토리 메서드 =====
@@ -34,15 +50,12 @@ public class Category {
         validateName(categoryName);
         validateDisplayOrder(displayOrder);
 
-        LocalDateTime now = LocalDateTime.now();
-
         return new Category(
-                null,
                 categoryName,
                 displayOrder,
-                now,
-                now,
-                null  // deletedAt (삭제되지 않음)
+                null,   // createdAt (JPA @CreationTimestamp가 자동 설정)
+                null,   // updatedAt (JPA @UpdateTimestamp가 자동 설정)
+                null    // deletedAt (삭제되지 않음)
         );
     }
 
@@ -52,7 +65,6 @@ public class Category {
     public void updateCategoryName(String name) {
         validateName(name);
         this.categoryName = name;
-        this.updatedAt = LocalDateTime.now();
     }
 
     /**
@@ -63,7 +75,6 @@ public class Category {
         validateDisplayOrder(displayOrder);
 
         this.displayOrder = displayOrder;
-        this.updatedAt = LocalDateTime.now();
     }
 
     /**
@@ -75,7 +86,6 @@ public class Category {
         }
 
         this.deletedAt = LocalDateTime.now();
-        this.updatedAt = LocalDateTime.now();
     }
 
     /**

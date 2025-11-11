@@ -14,8 +14,7 @@ public class CategoryEntityTest {
 
         assertThat(category.getCategoryName()).isEqualTo("전자제품");
         assertThat(category.getDisplayOrder()).isEqualTo(1);
-        assertThat(category.getCreatedAt()).isNotNull();
-        assertThat(category.getUpdatedAt()).isNotNull();
+        // createdAt, updatedAt은 JPA가 자동으로 설정하므로 단위 테스트에서는 null
         assertThat(category.getDeletedAt()).isNull();
     }
 
@@ -47,7 +46,7 @@ public class CategoryEntityTest {
         category.updateCategoryName("가전제품");
 
         assertThat(category.getCategoryName()).isEqualTo("가전제품");
-        assertThat(category.getUpdatedAt()).isNotNull();
+        // updatedAt은 JPA가 자동으로 설정
     }
 
     @Test
@@ -69,7 +68,7 @@ public class CategoryEntityTest {
         category.updateDisplayOrder(5);
 
         assertThat(category.getDisplayOrder()).isEqualTo(5);
-        assertThat(category.getUpdatedAt()).isNotNull();
+        // updatedAt은 JPA가 자동으로 설정
     }
 
     @Test

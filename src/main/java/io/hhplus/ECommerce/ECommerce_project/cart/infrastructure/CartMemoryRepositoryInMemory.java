@@ -1,7 +1,7 @@
 package io.hhplus.ECommerce.ECommerce_project.cart.infrastructure;
 
 import io.hhplus.ECommerce.ECommerce_project.cart.domain.entity.Cart;
-import io.hhplus.ECommerce.ECommerce_project.cart.domain.repository.CartRepository;
+import io.hhplus.ECommerce.ECommerce_project.cart.domain.repository.CartRepositoryInMemory;
 import io.hhplus.ECommerce.ECommerce_project.common.SnowflakeIdGenerator;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
@@ -14,7 +14,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 @Repository
 @RequiredArgsConstructor
-public class CartMemoryRepository implements CartRepository {
+public class CartMemoryRepositoryInMemory implements CartRepositoryInMemory {
     private final Map<Long, Cart> cartMap = new ConcurrentHashMap<>();
     private final SnowflakeIdGenerator idGenerator;
 

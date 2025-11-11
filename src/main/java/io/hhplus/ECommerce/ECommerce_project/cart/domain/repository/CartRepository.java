@@ -1,21 +1,16 @@
 package io.hhplus.ECommerce.ECommerce_project.cart.domain.repository;
 
 import io.hhplus.ECommerce.ECommerce_project.cart.domain.entity.Cart;
+import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;
 import java.util.Optional;
 
-public interface CartRepository {
+public interface CartRepository extends JpaRepository<Cart, Long> {
 
-    Cart save(Cart cart);
+    // 해당 유저의 전체 장바구니 목록 가져오기
+    List<Cart> findAllByUser_Id(Long userId);
 
-    Optional<Cart> findById(Long id);
-
-    List<Cart> findByUserId(Long userId);
-
-    Optional<Cart> findByUserIdAndProductId(Long userId, Long productId);
-
-    List<Cart> findAll();
-
-    void deleteById(Long id);
+    // 해당 유저의 상품 장바구니 단건 조회
+    Optional<Cart> findByUser_IdAndProduct_Id(Long userId, Long productId);
 }

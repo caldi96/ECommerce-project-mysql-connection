@@ -4,7 +4,7 @@ import io.hhplus.ECommerce.ECommerce_project.common.exception.ErrorCode;
 import io.hhplus.ECommerce.ECommerce_project.common.exception.UserException;
 import io.hhplus.ECommerce.ECommerce_project.point.application.command.GetPointBalanceCommand;
 import io.hhplus.ECommerce.ECommerce_project.point.domain.entity.Point;
-import io.hhplus.ECommerce.ECommerce_project.point.domain.repository.PointRepository;
+import io.hhplus.ECommerce.ECommerce_project.point.domain.repository.PointMemoryRepository;
 import io.hhplus.ECommerce.ECommerce_project.point.presentation.response.GetPointBalanceResponse;
 import io.hhplus.ECommerce.ECommerce_project.user.domain.entity.User;
 import io.hhplus.ECommerce.ECommerce_project.user.domain.repository.UserRepository;
@@ -23,7 +23,7 @@ import static org.mockito.Mockito.*;
 class GetPointBalanceUseCaseTest {
 
     @Mock
-    private PointRepository pointRepository;
+    private PointMemoryRepository pointRepository;
 
     @Mock
     private UserRepository userRepository;
@@ -40,7 +40,8 @@ class GetPointBalanceUseCaseTest {
     void execute_Success() {
         Long userId = 1L;
 
-        User user = new User(userId, "testUser", "password", BigDecimal.valueOf(500), LocalDateTime.now(), LocalDateTime.now());
+        User user = new User("testUser", "password", BigDecimal.valueOf(500), LocalDateTime.now(), LocalDateTime.now());
+        user.setId(userId);
         Point point1 = Point.charge(userId, BigDecimal.valueOf(100), "충전1");
         Point point2 = Point.charge(userId, BigDecimal.valueOf(200), "충전2");
 

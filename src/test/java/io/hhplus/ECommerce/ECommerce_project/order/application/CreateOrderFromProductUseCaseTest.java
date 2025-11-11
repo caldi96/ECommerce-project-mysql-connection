@@ -6,9 +6,9 @@ import io.hhplus.ECommerce.ECommerce_project.order.domain.entity.Orders;
 import io.hhplus.ECommerce.ECommerce_project.order.domain.repository.OrderItemRepository;
 import io.hhplus.ECommerce.ECommerce_project.order.domain.repository.OrderRepository;
 import io.hhplus.ECommerce.ECommerce_project.order.presentation.response.CreateOrderFromCartResponse;
-import io.hhplus.ECommerce.ECommerce_project.point.domain.repository.PointRepository;
+import io.hhplus.ECommerce.ECommerce_project.point.domain.repository.PointMemoryRepository;
 import io.hhplus.ECommerce.ECommerce_project.product.domain.entity.Product;
-import io.hhplus.ECommerce.ECommerce_project.product.domain.repository.ProductRepository;
+import io.hhplus.ECommerce.ECommerce_project.product.domain.repository.ProductRepositoryInMemory;
 import io.hhplus.ECommerce.ECommerce_project.user.domain.entity.User;
 import io.hhplus.ECommerce.ECommerce_project.user.domain.repository.UserRepository;
 import org.junit.jupiter.api.BeforeEach;
@@ -38,10 +38,10 @@ class CreateOrderFromProductUseCaseTest {
     private UserRepository userRepository;
 
     @Mock
-    private ProductRepository productRepository;
+    private ProductRepositoryInMemory productRepository;
 
     @Mock
-    private PointRepository pointRepository;
+    private PointMemoryRepository pointRepository;
 
     @InjectMocks
     private CreateOrderFromProductUseCase createOrderUseCase;
@@ -58,8 +58,9 @@ class CreateOrderFromProductUseCaseTest {
         int quantity = 2;
 
         // 유저 생성
-        User user = new User(userId, "testUser", "password", BigDecimal.valueOf(1000),
+        User user = new User("testUser", "password", BigDecimal.valueOf(1000),
                 LocalDateTime.now(), LocalDateTime.now());
+        user.setId(userId);
 
         // 상품 생성
         Product product = Product.createProduct("테스트 상품", 1L, "설명", BigDecimal.valueOf(100), 10, 1, 5);
@@ -67,7 +68,7 @@ class CreateOrderFromProductUseCaseTest {
 
         // Mock 설정
         when(userRepository.findById(userId)).thenReturn(Optional.of(user));
-        when(productRepository.findByIdWithLock(productId)).thenReturn(Optional.of(product));
+        when(productRepository.decreaseStockWithLock(productId, quantity)).thenReturn(product);
         when(orderRepository.save(any(Orders.class))).thenAnswer(i -> {
             Orders order = i.getArgument(0);
             order.setId(1L); // 테스트용 ID 설정

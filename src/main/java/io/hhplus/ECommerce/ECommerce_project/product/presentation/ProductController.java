@@ -1,10 +1,10 @@
 package io.hhplus.ECommerce.ECommerce_project.product.presentation;
 
+import io.hhplus.ECommerce.ECommerce_project.product.application.*;
 import io.hhplus.ECommerce.ECommerce_project.product.application.enums.ProductSortType;
 import io.hhplus.ECommerce.ECommerce_project.product.presentation.request.*;
 import io.hhplus.ECommerce.ECommerce_project.product.presentation.response.PageResponse;
 import io.hhplus.ECommerce.ECommerce_project.product.presentation.response.ProductResponse;
-import io.hhplus.ECommerce.ECommerce_project.product.application.*;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -52,12 +52,15 @@ public class ProductController {
         // Product -> ProductResponse 변환
         List<ProductResponse> content = ProductResponse.from(result.getProducts());
 
-        // 페이징 응답 생성
-        PageResponse<ProductResponse> pageResponse = PageResponse.of(
+        // 페이징 응답 생성 (ProductPageResult의 계산된 값 활용)
+        PageResponse<ProductResponse> pageResponse = new PageResponse<>(
                 content,
                 result.getPage(),
                 result.getSize(),
-                result.getTotalElements()
+                result.getTotalElements(),
+                result.getTotalPages(),
+                result.isFirst(),
+                result.isLast()
         );
 
         return ResponseEntity.ok(pageResponse);

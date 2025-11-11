@@ -1,13 +1,13 @@
-package io.hhplus.ECommerce.ECommerce_project.product.application.dto;
+package io.hhplus.ECommerce.ECommerce_project.point.application.dto;
 
-import io.hhplus.ECommerce.ECommerce_project.product.domain.entity.Product;
+import io.hhplus.ECommerce.ECommerce_project.point.domain.entity.Point;
 import lombok.Getter;
 
 import java.util.List;
 
 @Getter
-public class ProductPageResult {
-    private final List<Product> products;
+public class PointPageResult {
+    private final List<Point> points;
     private final int page;
     private final int size;
     private final long totalElements;
@@ -15,8 +15,8 @@ public class ProductPageResult {
     private final boolean isFirst;
     private final boolean isLast;
 
-    public ProductPageResult(List<Product> products, int page, int size, long totalElements, int totalPages, boolean isFirst, boolean isLast) {
-        this.products = products;
+    public PointPageResult(List<Point> points, int page, int size, long totalElements, int totalPages, boolean isFirst, boolean isLast) {
+        this.points = points;
         this.page = page;
         this.size = size;
         this.totalElements = totalElements;

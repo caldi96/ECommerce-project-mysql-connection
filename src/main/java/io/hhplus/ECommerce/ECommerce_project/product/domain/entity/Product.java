@@ -1,38 +1,65 @@
 package io.hhplus.ECommerce.ECommerce_project.product.domain.entity;
 
+import io.hhplus.ECommerce.ECommerce_project.category.domain.entity.Category;
+import io.hhplus.ECommerce.ECommerce_project.common.entity.BaseEntity;
 import io.hhplus.ECommerce.ECommerce_project.common.exception.ErrorCode;
 import io.hhplus.ECommerce.ECommerce_project.common.exception.ProductException;
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import jakarta.persistence.*;
+import lombok.*;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
+@Entity
+@Table(name = "products")
 @Getter
+@Setter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)  // JPA를 위한 기본 생성자
 @AllArgsConstructor(access = AccessLevel.PRIVATE)    // 정적 팩토리 메서드를 위한 private 생성자
-public class Product {
+public class Product extends BaseEntity {
 
-    private Long id;
-    // 나중에 JPA 연결 시
-    // @ManyToOne(fetch = FetchType.LAZY)
-    // @JoinColumn(name = "category_id")
-    // private Category category;
-    private Long categoryId;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "category_id", nullable = false)
+    private Category category;
+
+    @Column(nullable = false)
     private String name;
+
+    @Column(columnDefinition = "TEXT")
     private String description;
+
+    @Column(nullable = false, precision = 10, scale = 2)
     private BigDecimal price;
+
+    @Column(nullable = false)
     private int stock;
+
+    @Column(name = "is_active", nullable = false)
     private boolean isActive;
-    private boolean isOutOfStock;
+
+    @Column(name = "view_count", nullable = false)
     private int viewCount;
+
+    @Column(name = "sold_count", nullable = false)
     private int soldCount;
+
+    @Column(name = "min_order_quantity")
     private Integer minOrderQuantity;
+
+    @Column(name = "max_order_quantity")
     private Integer maxOrderQuantity;
+
+    @CreationTimestamp
+    @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt;
+
+    @UpdateTimestamp
+    @Column(name = "updated_at", nullable = false)
     private LocalDateTime updatedAt;
+
+    @Column(name = "deleted_at")
     private LocalDateTime deletedAt;  // 논리적 삭제용
 
     // ===== 정적 팩토리 메서드 =====
@@ -41,8 +68,8 @@ public class Product {
      * 상품 생성
      */
     public static Product createProduct(
+        Category category,
         String name,
-        Long categoryId,
         String description,
         BigDecimal price,
         int stock,
@@ -65,24 +92,19 @@ public class Product {
             throw new ProductException(ErrorCode.PRODUCT_MIN_ORDER_QUANTITY_EXCEEDS_MAX);
         }
 
-        LocalDateTime now = LocalDateTime.now();
-        boolean isSoldOut = stock == 0;
-
         return new Product(
-            null,       // id는 저장 시 생성
-            categoryId,
+            category,
             name,
             description,
             price,
             stock,
             true,       // isActive (초기 상태는 활성)
-            isSoldOut,
             0,          // viewCount
             0,          // soldCount
             minOrderQuantity,
             maxOrderQuantity,
-            now,        // createdAt
-            now,        // updatedAt
+            null,        // createdAt
+            null,        // updatedAt
             null        // deletedAt (삭제되지 않음)
         );
     }
@@ -104,12 +126,6 @@ public class Product {
         }
 
         this.stock -= quantity;
-        this.updatedAt = LocalDateTime.now();
-
-        // 재고가 0이 되면 자동으로 품절 처리
-        if (this.stock == 0) {
-            this.isOutOfStock = true;
-        }
     }
 
     /**
@@ -121,12 +137,6 @@ public class Product {
         }
 
         this.stock += quantity;
-        this.updatedAt = LocalDateTime.now();
-
-        // 재고가 증가하면 품절 상태 해제
-        if (this.stock > 0 && this.isOutOfStock) {
-            this.isOutOfStock = false;
-        }
     }
 
     /**
@@ -136,10 +146,6 @@ public class Product {
         validateStock(stock);
 
         this.stock = stock;
-        this.updatedAt = LocalDateTime.now();
-
-        // 재고에 따라 품절 상태 자동 설정
-        this.isOutOfStock = (stock == 0);
     }
 
     /**
@@ -151,7 +157,6 @@ public class Product {
         }
 
         this.soldCount += quantity;
-        this.updatedAt = LocalDateTime.now();
     }
 
     /**
@@ -168,7 +173,6 @@ public class Product {
         }
 
         this.soldCount -= quantity;
-        this.updatedAt = LocalDateTime.now();
     }
 
     /**
@@ -176,7 +180,6 @@ public class Product {
      */
     public void increaseViewCount() {
         this.viewCount++;
-        this.updatedAt = LocalDateTime.now();
     }
 
     /**
@@ -186,7 +189,6 @@ public class Product {
         validatePrice(price);
 
         this.price = price;
-        this.updatedAt = LocalDateTime.now();
     }
 
     /**
@@ -196,7 +198,6 @@ public class Product {
         validateName(name);
 
         this.name = name;
-        this.updatedAt = LocalDateTime.now();
     }
 
     /**
@@ -204,15 +205,13 @@ public class Product {
      */
     public void updateDescription(String description) {
         this.description = description;
-        this.updatedAt = LocalDateTime.now();
     }
 
     /**
      * 카테고리 수정
      */
-    public void updateCategoryId(Long categoryId) {
-        this.categoryId = categoryId;
-        this.updatedAt = LocalDateTime.now();
+    public void updateCategory(Category category) {
+        this.category = category;
     }
 
     /**
@@ -228,7 +227,6 @@ public class Product {
         }
 
         this.minOrderQuantity = minOrderQuantity;
-        this.updatedAt = LocalDateTime.now();
     }
 
     /**
@@ -244,7 +242,6 @@ public class Product {
         }
 
         this.maxOrderQuantity = maxOrderQuantity;
-        this.updatedAt = LocalDateTime.now();
     }
 
     /**
@@ -256,7 +253,6 @@ public class Product {
         }
 
         this.isActive = true;
-        this.updatedAt = LocalDateTime.now();
     }
 
     /**
@@ -268,35 +264,6 @@ public class Product {
         }
 
         this.isActive = false;
-        this.updatedAt = LocalDateTime.now();
-    }
-
-    /**
-     * 품절 처리 (수동)
-     */
-    public void outOfStock() {
-        if (this.isOutOfStock) {
-            throw new ProductException(ErrorCode.PRODUCT_ALREADY_SOLD_OUT);
-        }
-
-        this.isOutOfStock = true;
-        this.updatedAt = LocalDateTime.now();
-    }
-
-    /**
-     * 품절 해제 (수동)
-     */
-    public void backInStock() {
-        if (!this.isOutOfStock) {
-            throw new ProductException(ErrorCode.PRODUCT_ALREADY_AVAILABLE);
-        }
-
-        if (this.stock == 0) {
-            throw new ProductException(ErrorCode.PRODUCT_CANNOT_BE_AVAILABLE_WITH_ZERO_STOCK);
-        }
-
-        this.isOutOfStock = false;
-        this.updatedAt = LocalDateTime.now();
     }
 
     /**
@@ -310,7 +277,6 @@ public class Product {
         LocalDateTime now = LocalDateTime.now();
         this.deletedAt = now;
         this.isActive = false;  // 삭제 시 비활성화도 함께
-        this.updatedAt = now;
     }
 
     // ===== 상태 확인 메서드 =====
@@ -321,10 +287,6 @@ public class Product {
     public boolean canOrder(int quantity) {
         if (!this.isActive) {
             return false;  // 비활성 상품
-        }
-
-        if (this.isOutOfStock) {
-            return false;  // 품절
         }
 
         if (this.stock < quantity) {
@@ -357,10 +319,10 @@ public class Product {
     }
 
     /**
-     * 품절 여부
+     * 품절 여부 (계산 메서드)
      */
-    public boolean isSoldOutProduct() {
-        return this.isOutOfStock;
+    public boolean isOutOfStock() {
+        return this.stock == 0;
     }
 
     // ===== Validation 메서드 =====
@@ -384,10 +346,5 @@ public class Product {
         if (stock < 0) {
             throw new ProductException(ErrorCode.PRODUCT_STOCK_INVALID);
         }
-    }
-
-    // ===== 테스트를 위한 ID 설정 메서드 (인메모리 DB용) =====
-    public void setId(Long id) {
-        this.id = id;
     }
 }

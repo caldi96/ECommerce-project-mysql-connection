@@ -200,8 +200,8 @@ public class CreateOrderFromProductUseCase {
 
                 // 10-3. PointUsageHistory 생성 (주문과 포인트 연결 추적용)
                 PointUsageHistory history = PointUsageHistory.create(
-                        originalPoint.getId(),
-                        savedOrder.getId(),
+                        originalPoint,
+                        savedOrder,
                         usageAmount
                 );
                 pointUsageHistoryRepository.save(history);

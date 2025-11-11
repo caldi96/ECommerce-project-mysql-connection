@@ -2,7 +2,7 @@ package io.hhplus.ECommerce.ECommerce_project.point.infrastructure;
 
 import io.hhplus.ECommerce.ECommerce_project.common.SnowflakeIdGenerator;
 import io.hhplus.ECommerce.ECommerce_project.point.domain.entity.PointUsageHistory;
-import io.hhplus.ECommerce.ECommerce_project.point.domain.repository.PointUsageHistoryRepository;
+import io.hhplus.ECommerce.ECommerce_project.point.domain.repository.PointUsageHistoryMemoryRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
@@ -13,7 +13,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 @Repository
 @RequiredArgsConstructor
-public class PointUsageHistoryMemoryRepository implements PointUsageHistoryRepository {
+public class PointUsageHistoryMemoryRepositoryImpl implements PointUsageHistoryMemoryRepository {
 
     private final Map<Long, PointUsageHistory> historyMap = new ConcurrentHashMap<>();
     private final SnowflakeIdGenerator idGenerator;
@@ -36,7 +36,7 @@ public class PointUsageHistoryMemoryRepository implements PointUsageHistoryRepos
     @Override
     public List<PointUsageHistory> findByOrderIdAndCanceledAtIsNull(Long orderId) {
         return historyMap.values().stream()
-                .filter(history -> history.getOrderId().equals(orderId))
+                .filter(history -> history.getOrders().getId().equals(orderId))
                 .filter(history -> !history.isCanceled())
                 .toList();
     }
@@ -44,14 +44,14 @@ public class PointUsageHistoryMemoryRepository implements PointUsageHistoryRepos
     @Override
     public List<PointUsageHistory> findByPointId(Long pointId) {
         return historyMap.values().stream()
-                .filter(history -> history.getPointId().equals(pointId))
+                .filter(history -> history.getPoint().getId().equals(pointId))
                 .toList();
     }
 
     @Override
     public List<PointUsageHistory> findByOrderId(Long orderId) {
         return historyMap.values().stream()
-                .filter(history -> history.getOrderId().equals(orderId))
+                .filter(history -> history.getOrders().getId().equals(orderId))
                 .toList();
     }
 

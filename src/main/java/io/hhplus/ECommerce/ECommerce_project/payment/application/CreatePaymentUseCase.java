@@ -1,6 +1,8 @@
 package io.hhplus.ECommerce.ECommerce_project.payment.application;
 
-import io.hhplus.ECommerce.ECommerce_project.common.exception.*;
+import io.hhplus.ECommerce.ECommerce_project.common.exception.ErrorCode;
+import io.hhplus.ECommerce.ECommerce_project.common.exception.OrderException;
+import io.hhplus.ECommerce.ECommerce_project.common.exception.PaymentException;
 import io.hhplus.ECommerce.ECommerce_project.coupon.domain.entity.Coupon;
 import io.hhplus.ECommerce.ECommerce_project.coupon.domain.entity.UserCoupon;
 import io.hhplus.ECommerce.ECommerce_project.coupon.domain.repository.CouponRepository;
@@ -166,7 +168,7 @@ public class CreatePaymentUseCase {
                 for (PointUsageHistory history : pointUsageHistories) {
                     try {
                         // 원본 포인트 조회
-                        Point originalPoint = pointRepository.findById(history.getPointId())
+                        Point originalPoint = pointRepository.findById(history.getPoint().getId())
                                 .orElse(null);
 
                         if (originalPoint != null) {
@@ -182,7 +184,7 @@ public class CreatePaymentUseCase {
                             totalRestoredPoint = totalRestoredPoint.add(history.getUsedAmount());
                         }
                     } catch (Exception e) {
-                        System.err.println("포인트 복구 실패 (Point ID: " + history.getPointId() + "): " + e.getMessage());
+                        System.err.println("포인트 복구 실패 (Point ID: " + history.getPoint().getId() + "): " + e.getMessage());
                     }
                 }
 

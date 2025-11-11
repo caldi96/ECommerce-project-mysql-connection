@@ -51,6 +51,7 @@ public enum ErrorCode {
     POINT_ORDER_ID_REQUIRED("주문 ID는 필수입니다.", HttpStatus.BAD_REQUEST),
     POINT_CANNOT_EXPIRE_USED_POINT("사용된 포인트는 만료 처리할 수 없습니다.", HttpStatus.CONFLICT),
     POINT_ALREADY_EXPIRED("이미 만료된 포인트입니다.", HttpStatus.CONFLICT),
+    POINT_ALREADY_DELETED("이미 삭제된 포인트입니다.", HttpStatus.CONFLICT),
     POINT_NO_EXPIRATION_DATE("만료일이 없는 포인트입니다.", HttpStatus.CONFLICT),
     POINT_ONLY_CHARGE_OR_REFUND_CAN_BE_USED("충전 또는 환불 포인트만 사용 가능합니다.", HttpStatus.CONFLICT),
     POINT_ALREADY_USED("이미 사용된 포인트입니다.", HttpStatus.CONFLICT),

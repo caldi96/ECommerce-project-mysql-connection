@@ -14,7 +14,6 @@ public record ProductResponse(
         BigDecimal price,
         int stock,
         boolean isActive,
-        boolean isOutOfStock,
         Integer minOrderQuantity,
         Integer maxOrderQuantity,
         LocalDateTime createdAt,
@@ -23,13 +22,12 @@ public record ProductResponse(
     public static ProductResponse from(Product product) {
         return new ProductResponse(
                 product.getId(),
-                product.getCategoryId(),
+                product.getCategory() != null ? product.getCategory().getId() : null,
                 product.getName(),
                 product.getDescription(),
                 product.getPrice(),
                 product.getStock(),
                 product.isActive(),
-                product.isOutOfStock(),
                 product.getMinOrderQuantity(),
                 product.getMaxOrderQuantity(),
                 product.getCreatedAt(),

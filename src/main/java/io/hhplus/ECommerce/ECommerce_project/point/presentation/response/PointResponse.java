@@ -14,7 +14,7 @@ public record PointResponse(
         PointType pointType,
         String description,
         LocalDateTime createdAt,
-        LocalDateTime expiresAt,
+        LocalDateTime expiredAt,
         boolean isExpired,
         boolean isUsed
 ) {
@@ -26,7 +26,7 @@ public record PointResponse(
                 point.getPointType(),
                 point.getDescription(),
                 point.getCreatedAt(),
-                point.getExpiresAt(),
+                point.getExpiredAt(),
                 point.isExpired(),
                 point.isUsed()
         );

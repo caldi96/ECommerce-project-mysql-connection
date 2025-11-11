@@ -19,12 +19,12 @@ public class CreateCategoryUseCase {
     public Category execute(CreateCategoryCommand command) {
 
         // 1. 카테고리명 중복 체크
-        if (categoryRepository.existsByCategoryName(command.name())) {
+        if (categoryRepository.existsByCategoryNameAndDeletedAtIsNull(command.name())) {
             throw new CategoryException(ErrorCode.CATEGORY_NAME_DUPLICATED);
         }
 
         // 2. 표시 순서 중복 체크
-        if (categoryRepository.existsByDisplayOrder(command.displayOrder())) {
+        if (categoryRepository.existsByDisplayOrderAndDeletedAtIsNull(command.displayOrder())) {
             throw new CategoryException(ErrorCode.DISPLAY_ORDER_DUPLICATED);
         }
 

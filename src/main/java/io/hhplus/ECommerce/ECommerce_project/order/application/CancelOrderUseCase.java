@@ -97,7 +97,7 @@ public class CancelOrderUseCase {
 
         for (PointUsageHistory history : pointUsageHistories) {
             // 7-1. 원본 포인트 조회
-            Point originalPoint = pointRepository.findById(history.getPointId())
+            Point originalPoint = pointRepository.findById(history.getPoint().getId())
                     .orElseThrow(() -> new PointException(ErrorCode.POINT_NOT_FOUND));
 
             // 7-2. 사용한 포인트 금액만큼 복구

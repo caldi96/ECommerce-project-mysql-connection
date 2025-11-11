@@ -1,35 +1,38 @@
 package io.hhplus.ECommerce.ECommerce_project.point.domain.repository;
 
 import io.hhplus.ECommerce.ECommerce_project.point.domain.entity.Point;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 import java.util.List;
-import java.util.Optional;
 
-public interface PointRepository {
+public interface PointRepository extends JpaRepository<Point, Long> {
 
-    Point save(Point point);
+    // 유저의 사용가능한 포인트만 가져옴
+    @Query("""
+            SELECT p FROM Point p
+            WHERE p.user.id = :userId
+            AND p.isUsed = false
+            AND p.isExpired = false
+            AND (p.expiredAt IS NULL OR p.expiredAt > CURRENT_TIMESTAMP)
+            AND p.deletedAt IS NULL
+            ORDER BY p.createdAt ASC
+            """)
+    List<Point> findAvailablePointsByUserId(@Param("userId") Long userId);
 
-    Optional<Point> findById(Long id);
+    // 포인트 목록 조회 (정렬, 페이징)
+    @Query("""
+            SELECT p
+            FROM Point p
+            WHERE p.user.id = :userId
+            AND p.deletedAt IS NULL
+            ORDER BY p.createdAt DESC
+            """)
+    Page<Point> findByUserIdWithPaging(@Param("userId") Long userId, Pageable pageable);
 
-    List<Point> findAll();
-
-    List<Point> findAvailablePointsByUserId(Long userId);
-
-    /**
-     * 사용자의 포인트 이력 조회 (페이징)
-     * @param userId 사용자 ID
-     * @param page 페이지 번호 (0부터 시작)
-     * @param size 페이지 크기
-     * @return 포인트 이력 목록 (최신순)
-     */
-    List<Point> findByUserIdWithPaging(Long userId, int page, int size);
-
-    /**
-     * 사용자의 전체 포인트 이력 개수
-     * @param userId 사용자 ID
-     * @return 전체 이력 개수
-     */
-    long countByUserId(Long userId);
-
-    void deleteById(Long id);
+    // 포인트 목록 개수 조회
+    long countByUserIdAndDeletedAtIsNull(Long userId);
 }

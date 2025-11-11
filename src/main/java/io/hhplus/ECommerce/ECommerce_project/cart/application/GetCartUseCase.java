@@ -23,12 +23,12 @@ public class GetCartUseCase {
     @Transactional(readOnly = true)
     public List<GetCartResponse> execute(Long userId) {
         // 1. 사용자의 장바구니 조회
-        List<Cart> cartList = cartRepository.findByUserId(userId);
+        List<Cart> cartList = cartRepository.findAllByUser_Id(userId);
 
         // 2. 각 장바구니 아이템마다 상품 정보 조회 후 Response 생성
         return cartList.stream()
                 .map(cart -> {
-                    Product product = productRepository.findById(cart.getProductId())
+                    Product product = productRepository.findByIdActive(cart.getProduct().getId())
                             .orElseThrow(() -> new ProductException(ErrorCode.PRODUCT_NOT_FOUND));
                     return GetCartResponse.from(cart, product);
                 })

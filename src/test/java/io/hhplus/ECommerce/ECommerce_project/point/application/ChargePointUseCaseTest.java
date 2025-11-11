@@ -5,7 +5,7 @@ import io.hhplus.ECommerce.ECommerce_project.common.exception.PointException;
 import io.hhplus.ECommerce.ECommerce_project.common.exception.UserException;
 import io.hhplus.ECommerce.ECommerce_project.point.application.command.ChargePointCommand;
 import io.hhplus.ECommerce.ECommerce_project.point.domain.entity.Point;
-import io.hhplus.ECommerce.ECommerce_project.point.domain.repository.PointRepository;
+import io.hhplus.ECommerce.ECommerce_project.point.domain.repository.PointMemoryRepository;
 import io.hhplus.ECommerce.ECommerce_project.user.domain.entity.User;
 import io.hhplus.ECommerce.ECommerce_project.user.domain.repository.UserRepository;
 import org.junit.jupiter.api.BeforeEach;
@@ -22,7 +22,7 @@ import static org.mockito.Mockito.*;
 class ChargePointUseCaseTest {
 
     @Mock
-    private PointRepository pointRepository;
+    private PointMemoryRepository pointRepository;
 
     @Mock
     private UserRepository userRepository;
@@ -41,7 +41,8 @@ class ChargePointUseCaseTest {
         BigDecimal amount = BigDecimal.valueOf(1000);
         String description = "테스트 충전";
 
-        User user = new User(userId, "testUser", "password", BigDecimal.valueOf(500), LocalDateTime.now(), LocalDateTime.now());
+        User user = new User("testUser", "password", BigDecimal.valueOf(500), LocalDateTime.now(), LocalDateTime.now());
+        user.setId(userId);
         Point point = Point.charge(userId, amount, description);
 
         when(userRepository.findById(userId)).thenReturn(Optional.of(user));
@@ -78,7 +79,8 @@ class ChargePointUseCaseTest {
     @Test
     void execute_InvalidAmount_ThrowsException() {
         Long userId = 1L;
-        User user = new User(userId, "testUser", "password", BigDecimal.valueOf(500), LocalDateTime.now(), LocalDateTime.now());
+        User user = new User("testUser", "password", BigDecimal.valueOf(500), LocalDateTime.now(), LocalDateTime.now());
+        user.setId(userId);
 
         when(userRepository.findById(userId)).thenReturn(Optional.of(user));
 

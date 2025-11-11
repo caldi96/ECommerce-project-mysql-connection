@@ -3,7 +3,7 @@ package io.hhplus.ECommerce.ECommerce_project.product.application;
 import io.hhplus.ECommerce.ECommerce_project.common.exception.ErrorCode;
 import io.hhplus.ECommerce.ECommerce_project.common.exception.ProductException;
 import io.hhplus.ECommerce.ECommerce_project.product.domain.entity.Product;
-import io.hhplus.ECommerce.ECommerce_project.product.domain.repository.ProductRepository;
+import io.hhplus.ECommerce.ECommerce_project.product.domain.repository.ProductRepositoryInMemory;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -16,12 +16,12 @@ import static org.mockito.Mockito.*;
 
 public class DeleteProductUseCaseTest {
 
-    private ProductRepository productRepository;
+    private ProductRepositoryInMemory productRepository;
     private DeleteProductUseCase useCase;
 
     @BeforeEach
     void setup() {
-        productRepository = mock(ProductRepository.class);
+        productRepository = mock(ProductRepositoryInMemory.class);
         useCase = new DeleteProductUseCase(productRepository);
     }
 

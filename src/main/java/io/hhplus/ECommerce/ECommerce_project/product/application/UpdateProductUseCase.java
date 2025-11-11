@@ -1,10 +1,13 @@
 package io.hhplus.ECommerce.ECommerce_project.product.application;
 
+import io.hhplus.ECommerce.ECommerce_project.category.domain.entity.Category;
+import io.hhplus.ECommerce.ECommerce_project.category.domain.repository.CategoryRepository;
+import io.hhplus.ECommerce.ECommerce_project.common.exception.CategoryException;
 import io.hhplus.ECommerce.ECommerce_project.common.exception.ErrorCode;
 import io.hhplus.ECommerce.ECommerce_project.common.exception.ProductException;
+import io.hhplus.ECommerce.ECommerce_project.product.application.command.UpdateProductCommand;
 import io.hhplus.ECommerce.ECommerce_project.product.domain.entity.Product;
 import io.hhplus.ECommerce.ECommerce_project.product.domain.repository.ProductRepository;
-import io.hhplus.ECommerce.ECommerce_project.product.application.command.UpdateProductCommand;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -14,11 +17,12 @@ import org.springframework.transaction.annotation.Transactional;
 public class UpdateProductUseCase {
 
     private final ProductRepository productRepository;
+    private final CategoryRepository categoryRepository;
 
     @Transactional
     public Product execute(UpdateProductCommand command) {
         // 1. 기존 상품 조회
-        Product product = productRepository.findById(command.id())
+        Product product = productRepository.findByIdActive(command.id())
                 .orElseThrow(() -> new ProductException(ErrorCode.PRODUCT_NOT_FOUND));
 
         // 2. 도메인 메서드를 통해 각 필드 업데이트
@@ -35,7 +39,10 @@ public class UpdateProductUseCase {
         }
 
         if (command.categoryId() != null) {
-            product.updateCategoryId(command.categoryId());
+//            product.updateCategoryId(command.categoryId());
+            Category category = categoryRepository.findByIdAndDeletedAtIsNull(command.categoryId())
+                    .orElseThrow(() -> new CategoryException(ErrorCode.CATEGORY_NOT_FOUND));
+            product.updateCategory(category);
         }
 
         if (command.minOrderQuantity() != null) {
@@ -57,8 +64,8 @@ public class UpdateProductUseCase {
             }
         }
 
-        // 3. 변경사항 저장 및 반환
-        return productRepository.save(product);
+        // 3. 저장된 변경사항 반환
+        return product;
     }
 
 }

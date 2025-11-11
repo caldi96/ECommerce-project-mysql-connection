@@ -2,7 +2,7 @@ package io.hhplus.ECommerce.ECommerce_project.point.infrastructure;
 
 import io.hhplus.ECommerce.ECommerce_project.common.SnowflakeIdGenerator;
 import io.hhplus.ECommerce.ECommerce_project.point.domain.entity.Point;
-import io.hhplus.ECommerce.ECommerce_project.point.domain.repository.PointRepository;
+import io.hhplus.ECommerce.ECommerce_project.point.domain.repository.PointMemoryRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
@@ -11,7 +11,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 @Repository
 @RequiredArgsConstructor
-public class PointMemoryRepository implements PointRepository {
+public class PointMemoryRepositoryImpl implements PointMemoryRepository {
     private final Map<Long, Point> pointMap = new ConcurrentHashMap<>();
     private final SnowflakeIdGenerator idGenerator;
 
@@ -38,7 +38,7 @@ public class PointMemoryRepository implements PointRepository {
     @Override
     public List<Point> findAvailablePointsByUserId(Long userId) {
         return pointMap.values().stream()
-            .filter(point -> Objects.equals(point.getUserId(), userId))
+            .filter(point -> Objects.equals(point.getUser().getId(), userId))
             .filter(Point::isAvailable)  // 사용 가능한 포인트만
             .sorted(Comparator.comparing(Point::getCreatedAt))  // 생성일 기준 오름차순 정렬 (선입선출)
             .toList();
@@ -47,7 +47,7 @@ public class PointMemoryRepository implements PointRepository {
     @Override
     public List<Point> findByUserIdWithPaging(Long userId, int page, int size) {
         return pointMap.values().stream()
-                .filter(point -> Objects.equals(point.getUserId(), userId))
+                .filter(point -> Objects.equals(point.getUser().getId(), userId))
                 .sorted(Comparator.comparing(Point::getCreatedAt).reversed())  // 최신순 정렬
                 .skip((long) page * size)  // 페이징 offset
                 .limit(size)  // 페이징 limit
@@ -57,7 +57,7 @@ public class PointMemoryRepository implements PointRepository {
     @Override
     public long countByUserId(Long userId) {
         return pointMap.values().stream()
-                .filter(point -> Objects.equals(point.getUserId(), userId))
+                .filter(point -> Objects.equals(point.getUser().getId(), userId))
                 .count();
     }
 

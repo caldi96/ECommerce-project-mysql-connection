@@ -1,7 +1,7 @@
 package io.hhplus.ECommerce.ECommerce_project.category.application;
 
 import io.hhplus.ECommerce.ECommerce_project.category.domain.entity.Category;
-import io.hhplus.ECommerce.ECommerce_project.category.domain.repository.CategoryRepository;
+import io.hhplus.ECommerce.ECommerce_project.category.domain.repository.CategoryRepositoryInMemory;
 import io.hhplus.ECommerce.ECommerce_project.common.exception.CategoryException;
 import io.hhplus.ECommerce.ECommerce_project.common.exception.ErrorCode;
 import org.junit.jupiter.api.BeforeEach;
@@ -10,7 +10,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.time.LocalDateTime;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -21,7 +20,7 @@ import static org.mockito.Mockito.*;
 public class DeleteCategoryUseCaseTest {
 
     @Mock
-    private CategoryRepository categoryRepository;
+    private CategoryRepositoryInMemory categoryRepository;
 
     private DeleteCategoryUseCase deleteCategoryUseCase;
 

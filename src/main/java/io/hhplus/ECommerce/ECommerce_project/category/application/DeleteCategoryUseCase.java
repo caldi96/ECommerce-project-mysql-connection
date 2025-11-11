@@ -16,11 +16,10 @@ public class DeleteCategoryUseCase {
 
     @Transactional
     public void execute(Long id) {
-        Category category = categoryRepository.findById(id)
+        Category category = categoryRepository.findByIdAndDeletedAtIsNull(id)
             .orElseThrow(() -> new CategoryException(ErrorCode.CATEGORY_NOT_FOUND));
 
         // 논리적 삭제
         category.delete();
-        categoryRepository.save(category);
     }
 }

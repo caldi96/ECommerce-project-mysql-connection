@@ -7,13 +7,15 @@ import io.hhplus.ECommerce.ECommerce_project.point.application.command.GetPointB
 import io.hhplus.ECommerce.ECommerce_project.point.application.command.GetPointHistoryCommand;
 import io.hhplus.ECommerce.ECommerce_project.point.presentation.request.ChargePointRequest;
 import io.hhplus.ECommerce.ECommerce_project.point.presentation.response.GetPointBalanceResponse;
-import io.hhplus.ECommerce.ECommerce_project.point.presentation.response.GetPointHistoryResponse;
 import io.hhplus.ECommerce.ECommerce_project.point.presentation.response.PointResponse;
+import io.hhplus.ECommerce.ECommerce_project.product.presentation.response.PageResponse;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
@@ -49,13 +51,30 @@ public class PointController {
      * 포인트 이력 조회
      */
     @GetMapping("/history")
-    public ResponseEntity<GetPointHistoryResponse> getPointHistory(
+    public ResponseEntity<PageResponse<PointResponse>> getPointHistory(
             @RequestParam @NotNull(message = "사용자 ID는 필수입니다") Long userId,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "20") int size
     ) {
         GetPointHistoryCommand command = new GetPointHistoryCommand(userId, page, size);
-        GetPointHistoryResponse response = getPointHistoryUseCase.execute(command);
+        var result = getPointHistoryUseCase.execute(command);
+
+        // Point -> PointResponse 변환
+        List<PointResponse> content = result.getPoints().stream()
+                .map(PointResponse::from)
+                .toList();
+
+        // 페이징 응답 생성 (PointPageResult의 계산된 값 활용)
+        PageResponse<PointResponse> response = new PageResponse<>(
+                content,
+                result.getPage(),
+                result.getSize(),
+                result.getTotalElements(),
+                result.getTotalPages(),
+                result.isFirst(),
+                result.isLast()
+        );
+
         return ResponseEntity.ok(response);
     }
 

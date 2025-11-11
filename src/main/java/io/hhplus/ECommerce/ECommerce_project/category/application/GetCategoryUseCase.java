@@ -16,7 +16,7 @@ public class GetCategoryUseCase {
 
     @Transactional(readOnly = true)
     public Category execute(Long id) {
-        return categoryRepository.findById(id)
+        return categoryRepository.findByIdAndDeletedAtIsNull(id)
                 .orElseThrow(() -> new CategoryException(ErrorCode.CATEGORY_NOT_FOUND));
     }
 }

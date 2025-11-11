@@ -17,13 +17,10 @@ public class DeleteProductUseCase {
     @Transactional
     public void execute(Long productId) {
         // 1. 상품 조회
-        Product product = productRepository.findById(productId)
+        Product product = productRepository.findByIdActive(productId)
                 .orElseThrow(() -> new ProductException(ErrorCode.PRODUCT_NOT_FOUND));
 
         // 2. 논리적 삭제 (deletedAt 설정 및 비활성화)
         product.delete();
-
-        // 3. 변경사항 저장
-        productRepository.save(product);
     }
 }

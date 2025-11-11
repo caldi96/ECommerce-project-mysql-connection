@@ -2,7 +2,6 @@ package io.hhplus.ECommerce.ECommerce_project.point.domain.enums;
 
 public enum PointType {
 
-    USE("사용"),
     CHARGE("충전"),
     REFUND("환불");
 

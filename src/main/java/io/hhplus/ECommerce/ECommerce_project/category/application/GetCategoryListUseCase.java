@@ -16,6 +16,6 @@ public class GetCategoryListUseCase {
 
     @Transactional(readOnly = true)
     public List<Category> execute() {
-        return categoryRepository.findAll();
+        return categoryRepository.findAllByDeletedAtIsNull();
     }
 }

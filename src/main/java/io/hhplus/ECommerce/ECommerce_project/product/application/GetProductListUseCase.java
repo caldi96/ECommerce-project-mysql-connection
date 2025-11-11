@@ -5,10 +5,12 @@ import io.hhplus.ECommerce.ECommerce_project.product.application.enums.ProductSo
 import io.hhplus.ECommerce.ECommerce_project.product.domain.entity.Product;
 import io.hhplus.ECommerce.ECommerce_project.product.domain.repository.ProductRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -18,13 +20,37 @@ public class GetProductListUseCase {
 
     @Transactional(readOnly = true)
     public ProductPageResult execute(Long categoryId, ProductSortType sortType, int page, int size) {
-        // 1. Repository에서 필터링/정렬/페이징된 상품 조회
-        List<Product> products = productRepository.findProducts(categoryId, sortType, page, size);
+        // 1. ProductSortType을 Spring Data Sort로 변환
+        Sort sort = convertToSort(sortType);
 
-        // 2. 총 개수 조회 (페이징 메타데이터용)
-        long totalElements = productRepository.countActiveProducts(categoryId);
+        // 2. Pageable 생성
+        Pageable pageable = PageRequest.of(page, size, sort);
 
-        // 3. 결과 반환
-        return new ProductPageResult(products, page, size, totalElements);
+        // 3. Repository에서 필터링/정렬/페이징된 상품 조회
+        Page<Product> productPage = productRepository.findProducts(categoryId, pageable);
+
+        // 4. 결과 반환 (Page 객체의 모든 정보 활용)
+        return new ProductPageResult(
+            productPage.getContent(),
+            productPage.getNumber(),
+            productPage.getSize(),
+            productPage.getTotalElements(),
+            productPage.getTotalPages(),
+            productPage.isFirst(),
+            productPage.isLast()
+        );
+    }
+
+    /**
+     * ProductSortType을 Spring Data Sort로 변환
+     */
+    private Sort convertToSort(ProductSortType sortType) {
+        return switch (sortType) {
+            case LATEST -> Sort.by(Sort.Direction.DESC, "createdAt");
+            case POPULAR -> Sort.by(Sort.Direction.DESC, "soldCount");
+            case VIEWED -> Sort.by(Sort.Direction.DESC, "viewCount");
+            case PRICE_LOW -> Sort.by(Sort.Direction.ASC, "price");
+            case PRICE_HIGH -> Sort.by(Sort.Direction.DESC, "price");
+        };
     }
 }

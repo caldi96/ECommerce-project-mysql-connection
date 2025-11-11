@@ -14,17 +14,18 @@ Table categories {
     display_order int [default: 0]
     created_at timestamp [not null, default: `now()`]
     updated_at timestamp [not null, default: `now()`]
+    deleted_at timestamp
 }
 
 Table products {
     id bigint [pk]
+    category_id bigint [ref: > categories.id]
     name varchar [not null]
     description text
     price decimal(10,2) [not null]
     stock int [not null, default: 0]
-    category_id bigint [ref: > categories.id]
     is_active boolean [default: true]
-    is_soldOut boolean [default: false]
+    // is_out_of_stock boolean [default: false]
     view_count int [default: 0]  // 조회수 (인기순 정렬용)
     sold_count int [default: 0]  // 판매량 (인기순 정렬용)
     min_order_quantity int [default: 1]  // 1인당 최소 구매 수량
@@ -116,22 +117,28 @@ Table points {
     id bigint [pk]
     user_id bigint [ref: > users.id, not null]
     amount decimal(10,2) [not null]
-    usedAmount decimal(10,2)
+    used_amount decimal(10,2) [not null, default: 0]
     point_type varchar [not null]  // EARNED, USED, EXPIRED, REFUNDED
     description varchar  // 적립/사용 사유
-    expires_at timestamp  // 포인트 만료일
+    expired_at timestamp  // 포인트 만료일
     created_at timestamp [not null, default: `now()`]
+    updated_at timestamp [not null, default: `now()`]
+    expired_at timestamp
+    used_at timestamp
+    deleted_at timestamp
+    is_expired boolean
+    is_used boolean
     indexes {
         (user_id)
         (created_at)
     }
 }
 
-Table pointUsageHistory {
+Table pointUsageHistories {
     id bigint [pk]
     point_id bigint [ref: > points.id, not null]
     order_id bigint [ref: > orders.id, not null]
-    usedAmount decimal(10,2) [not null] // 사용한 포인트 금액
+    used_amount decimal(10,2) [not null] // 사용한 포인트 금액
     created_at timestamp [not null, default: `now()`]
     canceled_at timestamp
 }
