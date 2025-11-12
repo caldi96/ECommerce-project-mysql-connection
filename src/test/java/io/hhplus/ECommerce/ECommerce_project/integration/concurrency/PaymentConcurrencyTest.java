@@ -12,7 +12,7 @@ import io.hhplus.ECommerce.ECommerce_project.payment.domain.enums.PaymentMethod;
 import io.hhplus.ECommerce.ECommerce_project.product.domain.entity.Product;
 import io.hhplus.ECommerce.ECommerce_project.product.domain.repository.ProductRepositoryInMemory;
 import io.hhplus.ECommerce.ECommerce_project.user.domain.entity.User;
-import io.hhplus.ECommerce.ECommerce_project.user.domain.repository.UserRepository;
+import io.hhplus.ECommerce.ECommerce_project.user.domain.repository.UserMemoryRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -51,7 +51,7 @@ public class PaymentConcurrencyTest {
     private ProductRepositoryInMemory productRepository;
 
     @Autowired
-    private UserRepository userRepository;
+    private UserMemoryRepository userRepository;
 
     private User testUser;
     private Product testProduct;

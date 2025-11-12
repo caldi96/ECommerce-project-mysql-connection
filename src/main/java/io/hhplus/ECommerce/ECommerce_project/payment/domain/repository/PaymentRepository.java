@@ -1,19 +1,12 @@
 package io.hhplus.ECommerce.ECommerce_project.payment.domain.repository;
 
 import io.hhplus.ECommerce.ECommerce_project.payment.domain.entity.Payment;
+import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;
-import java.util.Optional;
 
-public interface PaymentRepository {
+public interface PaymentRepository extends JpaRepository<Payment, Long> {
 
-    Payment save(Payment payment);
-
-    Optional<Payment> findById(Long id);
-
-    List<Payment> findByOrderId(Long orderId);
-
-    List<Payment> findAll();
-
-    void deleteById(Long id);
+    // 해당 주문의 결제 목록 조회
+    List<Payment> findByOrder_Id(Long orderId);
 }

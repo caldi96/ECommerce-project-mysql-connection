@@ -10,7 +10,7 @@ import io.hhplus.ECommerce.ECommerce_project.point.domain.repository.PointMemory
 import io.hhplus.ECommerce.ECommerce_project.product.domain.entity.Product;
 import io.hhplus.ECommerce.ECommerce_project.product.domain.repository.ProductRepositoryInMemory;
 import io.hhplus.ECommerce.ECommerce_project.user.domain.entity.User;
-import io.hhplus.ECommerce.ECommerce_project.user.domain.repository.UserRepository;
+import io.hhplus.ECommerce.ECommerce_project.user.domain.repository.UserMemoryRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -35,7 +35,7 @@ class CreateOrderFromProductUseCaseTest {
     private OrderItemMemoryRepository orderItemRepository;
 
     @Mock
-    private UserRepository userRepository;
+    private UserMemoryRepository userRepository;
 
     @Mock
     private ProductRepositoryInMemory productRepository;

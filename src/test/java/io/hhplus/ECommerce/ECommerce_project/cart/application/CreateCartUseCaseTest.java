@@ -10,7 +10,7 @@ import io.hhplus.ECommerce.ECommerce_project.common.exception.UserException;
 import io.hhplus.ECommerce.ECommerce_project.product.domain.entity.Product;
 import io.hhplus.ECommerce.ECommerce_project.product.domain.repository.ProductRepositoryInMemory;
 import io.hhplus.ECommerce.ECommerce_project.user.domain.entity.User;
-import io.hhplus.ECommerce.ECommerce_project.user.domain.repository.UserRepository;
+import io.hhplus.ECommerce.ECommerce_project.user.domain.repository.UserMemoryRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -24,14 +24,14 @@ public class CreateCartUseCaseTest {
 
     private CartRepositoryInMemory cartRepository;
     private ProductRepositoryInMemory productRepository;
-    private UserRepository userRepository;
+    private UserMemoryRepository userRepository;
     private CreateCartUseCase createCartUseCase;
 
     @BeforeEach
     void setUp() {
         cartRepository = mock(CartRepositoryInMemory.class);
         productRepository = mock(ProductRepositoryInMemory.class);
-        userRepository = mock(UserRepository.class);
+        userRepository = mock(UserMemoryRepository.class);
 
         createCartUseCase = new CreateCartUseCase(cartRepository, productRepository, userRepository);
     }

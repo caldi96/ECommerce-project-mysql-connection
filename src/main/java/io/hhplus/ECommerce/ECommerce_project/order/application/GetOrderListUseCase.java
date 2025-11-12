@@ -6,15 +6,12 @@ import io.hhplus.ECommerce.ECommerce_project.order.application.command.GetOrderL
 import io.hhplus.ECommerce.ECommerce_project.order.application.dto.OrdersPageResult;
 import io.hhplus.ECommerce.ECommerce_project.order.domain.entity.Orders;
 import io.hhplus.ECommerce.ECommerce_project.order.domain.repository.OrderRepository;
-import io.hhplus.ECommerce.ECommerce_project.order.presentation.response.GetOrderListResponse;
 import io.hhplus.ECommerce.ECommerce_project.user.domain.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
-
-import java.util.List;
 
 @Service
 @RequiredArgsConstructor

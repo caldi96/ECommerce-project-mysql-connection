@@ -50,7 +50,7 @@ public class CreateOrderFromCartUseCase {
     public CreateOrderFromCartResponse execute(CreateOrderFromCartCommand command) {
 
         // 1. 사용자 확인
-        User user = userRepository.findById(command.userId())
+        User user = userRepository.findByIdWithLock(command.userId())
                 .orElseThrow(() -> new UserException(ErrorCode.USER_NOT_FOUND));
 
         // 2. 장바구니 아이템 조회 (cartItemIds)
@@ -119,7 +119,7 @@ public class CreateOrderFromCartUseCase {
         if (command.couponId() != null) {
             // 6-1. 사용자 쿠폰 조회
             UserCoupon userCoupon = userCouponRepository
-                    .findByUser_IdAndCoupon_Id(command.userId(), command.couponId())
+                    .findByUser_IdAndCoupon_IdWithLock(command.userId(), command.couponId())
                     .orElseThrow(() -> new CouponException(ErrorCode.USER_COUPON_NOT_FOUND));
 
             // 6-2. 쿠폰 조회 및 검증
@@ -167,12 +167,16 @@ public class CreateOrderFromCartUseCase {
                     break;
                 }
 
+                // 락을 걸어서 다시 조회
+                Point lockedPoint = pointRepository.findByIdWithLock(point.getId())
+                        .orElseThrow(() -> new PointException(ErrorCode.POINT_NOT_FOUND));
+
                 // 해당 포인트에서 사용할 수 있는 금액 계산
-                BigDecimal availableAmount = point.getRemainingAmount();
+                BigDecimal availableAmount = lockedPoint.getRemainingAmount();
                 BigDecimal pointToUse = availableAmount.min(remainingPointToUse);
 
                 // 나중에 사용 이력 생성을 위해 임시 저장
-                pointsToUpdate.add(point);
+                pointsToUpdate.add(lockedPoint);
                 pointUsageAmounts.add(pointToUse);
 
                 remainingPointToUse = remainingPointToUse.subtract(pointToUse);

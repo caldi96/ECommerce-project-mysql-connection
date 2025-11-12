@@ -2,7 +2,7 @@ package io.hhplus.ECommerce.ECommerce_project.payment.infrastructure;
 
 import io.hhplus.ECommerce.ECommerce_project.common.SnowflakeIdGenerator;
 import io.hhplus.ECommerce.ECommerce_project.payment.domain.entity.Payment;
-import io.hhplus.ECommerce.ECommerce_project.payment.domain.repository.PaymentRepository;
+import io.hhplus.ECommerce.ECommerce_project.payment.domain.repository.PaymentMemoryRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
@@ -11,7 +11,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 @Repository
 @RequiredArgsConstructor
-public class PaymentMemoryRepository implements PaymentRepository {
+public class PaymentMemoryRepositoryImpl implements PaymentMemoryRepository {
     private final Map<Long, Payment> paymentMap = new ConcurrentHashMap<>();
     private final SnowflakeIdGenerator idGenerator;
 
@@ -33,7 +33,7 @@ public class PaymentMemoryRepository implements PaymentRepository {
     @Override
     public List<Payment> findByOrderId(Long orderId) {
         return paymentMap.values().stream()
-                .filter(payment -> Objects.equals(payment.getOrderId(), orderId))
+                .filter(payment -> Objects.equals(payment.getOrder().getId(), orderId))
                 .toList();
     }
 

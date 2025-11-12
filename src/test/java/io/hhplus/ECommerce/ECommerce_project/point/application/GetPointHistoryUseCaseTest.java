@@ -4,7 +4,7 @@ import io.hhplus.ECommerce.ECommerce_project.point.domain.entity.Point;
 import io.hhplus.ECommerce.ECommerce_project.point.domain.repository.PointMemoryRepository;
 import io.hhplus.ECommerce.ECommerce_project.point.presentation.response.GetPointHistoryResponse;
 import io.hhplus.ECommerce.ECommerce_project.user.domain.entity.User;
-import io.hhplus.ECommerce.ECommerce_project.user.domain.repository.UserRepository;
+import io.hhplus.ECommerce.ECommerce_project.user.domain.repository.UserMemoryRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -20,13 +20,13 @@ import static org.mockito.Mockito.when;
 class GetPointHistoryUseCaseTest {
 
     private PointMemoryRepository pointRepository;
-    private UserRepository userRepository;
+    private UserMemoryRepository userRepository;
     private GetPointHistoryUseCase getPointHistoryUseCase;
 
     @BeforeEach
     void setUp() {
         pointRepository = mock(PointMemoryRepository.class);
-        userRepository = mock(UserRepository.class);
+        userRepository = mock(UserMemoryRepository.class);
         getPointHistoryUseCase = new GetPointHistoryUseCase(pointRepository, userRepository);
     }
 

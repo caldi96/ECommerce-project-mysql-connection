@@ -9,7 +9,7 @@ import io.hhplus.ECommerce.ECommerce_project.point.domain.repository.PointMemory
 import io.hhplus.ECommerce.ECommerce_project.product.domain.entity.Product;
 import io.hhplus.ECommerce.ECommerce_project.product.domain.repository.ProductRepositoryInMemory;
 import io.hhplus.ECommerce.ECommerce_project.user.domain.entity.User;
-import io.hhplus.ECommerce.ECommerce_project.user.domain.repository.UserRepository;
+import io.hhplus.ECommerce.ECommerce_project.user.domain.repository.UserMemoryRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -24,14 +24,14 @@ import static org.mockito.Mockito.*;
 class CreateOrderFromCartUseCaseTest {
 
     private CreateOrderFromCartUseCase useCase;
-    private UserRepository userRepository;
+    private UserMemoryRepository userRepository;
     private CartRepositoryInMemory cartRepository;
     private ProductRepositoryInMemory productRepository;
     private PointMemoryRepository pointRepository;
 
     @BeforeEach
     void setup() {
-        userRepository = mock(UserRepository.class);
+        userRepository = mock(UserMemoryRepository.class);
         cartRepository = mock(CartRepositoryInMemory.class);
         productRepository = mock(ProductRepositoryInMemory.class);
         pointRepository = mock(PointMemoryRepository.class);

@@ -7,7 +7,7 @@ import io.hhplus.ECommerce.ECommerce_project.point.application.command.ChargePoi
 import io.hhplus.ECommerce.ECommerce_project.point.domain.entity.Point;
 import io.hhplus.ECommerce.ECommerce_project.point.domain.repository.PointMemoryRepository;
 import io.hhplus.ECommerce.ECommerce_project.user.domain.entity.User;
-import io.hhplus.ECommerce.ECommerce_project.user.domain.repository.UserRepository;
+import io.hhplus.ECommerce.ECommerce_project.user.domain.repository.UserMemoryRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.*;
@@ -25,7 +25,7 @@ class ChargePointUseCaseTest {
     private PointMemoryRepository pointRepository;
 
     @Mock
-    private UserRepository userRepository;
+    private UserMemoryRepository userRepository;
 
     @InjectMocks
     private ChargePointUseCase chargePointUseCase;

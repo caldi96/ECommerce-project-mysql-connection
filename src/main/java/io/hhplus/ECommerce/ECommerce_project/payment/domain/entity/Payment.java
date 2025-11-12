@@ -1,39 +1,65 @@
 package io.hhplus.ECommerce.ECommerce_project.payment.domain.entity;
 
+import io.hhplus.ECommerce.ECommerce_project.common.entity.BaseEntity;
 import io.hhplus.ECommerce.ECommerce_project.common.exception.ErrorCode;
 import io.hhplus.ECommerce.ECommerce_project.common.exception.PaymentException;
+import io.hhplus.ECommerce.ECommerce_project.order.domain.entity.Orders;
 import io.hhplus.ECommerce.ECommerce_project.payment.domain.enums.PaymentMethod;
 import io.hhplus.ECommerce.ECommerce_project.payment.domain.enums.PaymentStatus;
 import io.hhplus.ECommerce.ECommerce_project.payment.domain.enums.PaymentType;
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import jakarta.persistence.*;
+import lombok.*;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
+@Entity
+@Table(name = "payments")
 @Getter
+@Setter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)  // JPA를 위한 기본 생성자
 @AllArgsConstructor(access = AccessLevel.PRIVATE)    // 정적 팩토리 메서드를 위한 private 생성자
-public class Payment {
+public class Payment extends BaseEntity {
 
-    private Long id;
-    // 나중에 JPA 연결 시
-    // @ManyToOne(fetch = FetchType.LAZY)
-    // @JoinColumn(name = "order_id")
-    // private Orders order;
-    private Long orderId;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "order_id", nullable = false)
+    private Orders order;
+
+    @Column(nullable = false, precision = 10, scale = 2)
     private BigDecimal amount;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "payment_type", nullable = false)
     private PaymentType paymentType;        // 결제 / 환불
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "payment_method", nullable = false)
     private PaymentMethod paymentMethod;    // 카드, 계좌이체 등
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "payment_status", nullable = false)
     private PaymentStatus paymentStatus;    // PENDING, COMPLETED, FAILED, REFUNDED
+
     //private String transactionId;
     //private String pgProvider;
+
+    @Column(name = "failure_reason", columnDefinition = "TEXT")
     private String failureReason;
+
+    @CreationTimestamp
+    @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt;
+
+    @UpdateTimestamp
+    @Column(name = "updated_at", nullable = false)
     private LocalDateTime updatedAt;
+
+    @Column(name = "completed_at")
     private LocalDateTime completedAt;
+
+    @Column(name = "failed_at")
     private LocalDateTime failedAt;
 
     // ===== 정적 팩토리 메서드 =====
@@ -41,21 +67,19 @@ public class Payment {
     /**
      * 새로운 결제 생성 (결제 시작)
      */
-    public static Payment createPayment(Long orderId, BigDecimal amount, PaymentMethod paymentMethod) {
+    public static Payment createPayment(Orders orders, BigDecimal amount, PaymentMethod paymentMethod) {
         validateAmount(amount);
-        validateOrderId(orderId);
+        validateOrders(orders);
 
-        LocalDateTime now = LocalDateTime.now();
         return new Payment(
-            null,  // id는 저장 시 생성
-            orderId,
+            orders,
             amount,
             PaymentType.PAYMENT,
             paymentMethod,
             PaymentStatus.PENDING,
             null,  // failureReason
-            now,   // createdAt
-            now,   // updatedAt
+            null,   // createdAt
+            null,   // updatedAt
             null,  // completedAt
             null   // failedAt
         );
@@ -64,21 +88,19 @@ public class Payment {
     /**
      * 환불 생성
      */
-    public static Payment createRefund(Long orderId, BigDecimal amount, PaymentMethod paymentMethod) {
+    public static Payment createRefund(Orders orders, BigDecimal amount, PaymentMethod paymentMethod) {
         validateAmount(amount);
-        validateOrderId(orderId);
+        validateOrders(orders);
 
-        LocalDateTime now = LocalDateTime.now();
         return new Payment(
-            null,
-            orderId,
+            orders,
             amount,
             PaymentType.REFUND,
             paymentMethod,
             PaymentStatus.PENDING,
             null,
-            now,
-            now,
+            null,
+            null,
             null,
             null
         );
@@ -105,7 +127,6 @@ public class Payment {
         LocalDateTime now = LocalDateTime.now();
         this.paymentStatus = PaymentStatus.COMPLETED;
         this.completedAt = now;
-        this.updatedAt = now;
     }
 
     /**
@@ -128,7 +149,6 @@ public class Payment {
         this.paymentStatus = PaymentStatus.FAILED;
         this.failureReason = reason;
         this.failedAt = now;
-        this.updatedAt = now;
     }
 
     /**
@@ -150,7 +170,6 @@ public class Payment {
 
         LocalDateTime now = LocalDateTime.now();
         this.paymentStatus = PaymentStatus.REFUNDED;
-        this.updatedAt = now;
     }
 
     // ===== 상태 확인 메서드 =====
@@ -202,14 +221,9 @@ public class Payment {
         }
     }
 
-    private static void validateOrderId(Long orderId) {
-        if (orderId == null) {
+    private static void validateOrders(Orders orders) {
+        if (orders == null || orders.getId() == null) {
             throw new PaymentException(ErrorCode.PAYMENT_ORDER_ID_REQUIRED);
         }
-    }
-
-    // ===== 테스트를 위한 ID 설정 메서드 (인메모리 DB용) =====
-    public void setId(Long id) {
-        this.id = id;
     }
 }

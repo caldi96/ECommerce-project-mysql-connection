@@ -185,7 +185,6 @@ public class Orders extends BaseEntity {
                 "결제 대기 중인 주문만 결제 실패 처리할 수 있습니다. 현재 상태: " + this.status);
         }
 
-        LocalDateTime now = LocalDateTime.now();
         this.status = OrderStatus.PAYMENT_FAILED;
     }
 

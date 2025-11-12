@@ -1,13 +1,16 @@
 package io.hhplus.ECommerce.ECommerce_project.point.domain.repository;
 
 import io.hhplus.ECommerce.ECommerce_project.point.domain.entity.Point;
+import jakarta.persistence.LockModeType;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Lock;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface PointRepository extends JpaRepository<Point, Long> {
 
@@ -35,4 +38,9 @@ public interface PointRepository extends JpaRepository<Point, Long> {
 
     // 포인트 목록 개수 조회
     long countByUserIdAndDeletedAtIsNull(Long userId);
+
+    // 포인트 조회 (비관적 락)
+    @Lock(LockModeType.PESSIMISTIC_WRITE)
+    @Query("SELECT p FROM Point p WHERE p.id = :pointId")
+    Optional<Point> findByIdWithLock(@Param("pointId") Long pointId);
 }

@@ -42,7 +42,7 @@ public class CancelOrderUseCase {
     @Transactional
     public void execute(CancelOrderCommand command) {
         // 1. 주문 조회
-        Orders order = orderRepository.findById(command.orderId())
+        Orders order = orderRepository.findByIdWithLock(command.orderId())
                 .orElseThrow(() -> new OrderException(ErrorCode.ORDER_NOT_FOUND));
 
         // 2. 주문 소유자 확인
@@ -72,9 +72,9 @@ public class CancelOrderUseCase {
 
         // 6. 쿠폰 복구
         if (order.getCoupon() != null) {
-            // 6-1. 사용자 쿠폰 조회
+            // 6-1. 사용자 쿠폰 조회(비관적락)
             UserCoupon userCoupon = userCouponRepository
-                    .findByUser_IdAndCoupon_Id(order.getUser().getId(), order.getCoupon().getId())
+                    .findByUser_IdAndCoupon_IdWithLock(order.getUser().getId(), order.getCoupon().getId())
                     .orElseThrow(() -> new CouponException(ErrorCode.USER_COUPON_NOT_FOUND));
 
             // 6-2. 쿠폰 정보 조회
@@ -94,7 +94,7 @@ public class CancelOrderUseCase {
 
         for (PointUsageHistory history : pointUsageHistories) {
             // 7-1. 원본 포인트 조회
-            Point originalPoint = pointRepository.findById(history.getPoint().getId())
+            Point originalPoint = pointRepository.findByIdWithLock(history.getPoint().getId())
                     .orElseThrow(() -> new PointException(ErrorCode.POINT_NOT_FOUND));
 
             // 7-2. 사용한 포인트 금액만큼 복구
@@ -109,7 +109,7 @@ public class CancelOrderUseCase {
 
         // 7-5. User의 포인트 잔액 복구
         if (totalRestoredPoint.compareTo(BigDecimal.ZERO) > 0) {
-            User user = userRepository.findById(command.userId())
+            User user = userRepository.findByIdWithLock(command.userId())
                     .orElseThrow(() -> new UserException(ErrorCode.USER_NOT_FOUND));
 
             user.refundPoint(totalRestoredPoint);

@@ -2,7 +2,7 @@ package io.hhplus.ECommerce.ECommerce_project.user.infrastructure;
 
 import io.hhplus.ECommerce.ECommerce_project.common.SnowflakeIdGenerator;
 import io.hhplus.ECommerce.ECommerce_project.user.domain.entity.User;
-import io.hhplus.ECommerce.ECommerce_project.user.domain.repository.UserRepository;
+import io.hhplus.ECommerce.ECommerce_project.user.domain.repository.UserMemoryRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
@@ -11,7 +11,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 @Repository
 @RequiredArgsConstructor
-public class UserMemoryRepository implements UserRepository {
+public class UserMemoryRepositoryImpl implements UserMemoryRepository {
     private final Map<Long, User> userMap = new ConcurrentHashMap<>();
     private final SnowflakeIdGenerator idGenerator;
 
