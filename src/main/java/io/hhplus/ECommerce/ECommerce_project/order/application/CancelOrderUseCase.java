@@ -76,7 +76,7 @@ public class CancelOrderUseCase {
         if (order.getCouponId() != null) {
             // 6-1. 사용자 쿠폰 조회
             UserCoupon userCoupon = userCouponRepository
-                    .findByUserIdAndCouponId(order.getUserId(), order.getCouponId())
+                    .findByUser_IdAndCoupon_Id(order.getUserId(), order.getCouponId())
                     .orElseThrow(() -> new CouponException(ErrorCode.USER_COUPON_NOT_FOUND));
 
             // 6-2. 쿠폰 정보 조회

@@ -4,6 +4,7 @@ import io.hhplus.ECommerce.ECommerce_project.common.entity.BaseEntity;
 import io.hhplus.ECommerce.ECommerce_project.common.exception.CategoryException;
 import io.hhplus.ECommerce.ECommerce_project.common.exception.ErrorCode;
 import jakarta.persistence.*;
+import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -17,8 +18,8 @@ import java.time.LocalDateTime;
 @Table(name = "categories")
 @Getter
 @Setter
-@NoArgsConstructor
-@AllArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)  // JPA를 위한 기본 생성자
+@AllArgsConstructor(access = AccessLevel.PRIVATE)    // 정적 팩토리 메서드를 위한 private 생성자
 public class Category extends BaseEntity {
 
     @Column(name = "category_name", nullable = false, unique = true)

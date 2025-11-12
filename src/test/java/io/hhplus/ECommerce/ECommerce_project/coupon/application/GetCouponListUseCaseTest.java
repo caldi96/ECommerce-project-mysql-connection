@@ -2,7 +2,7 @@ package io.hhplus.ECommerce.ECommerce_project.coupon.application;
 
 import io.hhplus.ECommerce.ECommerce_project.coupon.domain.entity.Coupon;
 import io.hhplus.ECommerce.ECommerce_project.coupon.domain.enums.DiscountType;
-import io.hhplus.ECommerce.ECommerce_project.coupon.domain.repository.CouponRepository;
+import io.hhplus.ECommerce.ECommerce_project.coupon.domain.repository.CouponMemoryRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -20,7 +20,7 @@ import static org.mockito.Mockito.when;
 class GetCouponListUseCaseTest {
 
     @Mock
-    private CouponRepository couponRepository;
+    private CouponMemoryRepository couponRepository;
 
     @InjectMocks
     private GetCouponListUseCase getCouponListUseCase;

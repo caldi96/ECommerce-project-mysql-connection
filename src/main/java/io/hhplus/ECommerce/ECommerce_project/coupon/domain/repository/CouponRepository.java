@@ -1,40 +1,33 @@
 package io.hhplus.ECommerce.ECommerce_project.coupon.domain.repository;
 
 import io.hhplus.ECommerce.ECommerce_project.coupon.domain.entity.Coupon;
+import jakarta.persistence.LockModeType;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Lock;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
-public interface CouponRepository {
+public interface CouponRepository extends JpaRepository<Coupon, Long> {
 
-    Coupon save(Coupon coupon);
+    // 코드로 쿠폰 조회
+    Optional<Coupon> findByCodeIgnoreCase(String code);
 
-    Optional<Coupon> findById(Long id);
+    // 사용가능한 쿠폰 목록 조회
 
-    Optional<Coupon> findByCode(String code);
+    @Query("""
+            SELECT c
+            FROM Coupon c
+            WHERE c.isActive = true
+              AND c.startDate <= CURRENT_TIMESTAMP
+              AND c.endDate >= CURRENT_TIMESTAMP
+            """)
+    List<Coupon> findAllAvailableCoupons();
 
-    List<Coupon> findAll();
-
-    /**
-     * 현재 시점 기준으로 활성화된 쿠폰 조회
-     * (isActive = true AND startDate <= now AND endDate >= now)
-     */
-    List<Coupon> findAllByIsActiveTrueAndStartDateBeforeAndEndDateAfter(LocalDateTime now1, LocalDateTime now2);
-
-    void deleteById(Long id);
-
-    /**
-     * 동시성 제어를 위한 쿠폰 발급 수량 증가 (인메모리 전용)
-     * @param couponId 쿠폰 ID
-     * @return 업데이트된 쿠폰
-     */
-    Coupon increaseIssuedQuantityWithLock(Long couponId);
-
-    /**
-     * 동시성 제어를 위한 쿠폰 조회 (비관적 락)
-     * @param couponId 쿠폰 ID
-     * @return 쿠폰 Optional
-     */
-    Optional<Coupon> findByIdWithLock(Long couponId);
+    // 비관적 락(PESSIMISTIC_WRITE) 으로 쿠폰 조회
+    @Lock(LockModeType.PESSIMISTIC_WRITE)
+    @Query("SELECT c FROM Coupon c WHERE c.id = :couponId")
+    Optional<Coupon> findByIdWithLock(@Param("couponId") Long couponId);
 }

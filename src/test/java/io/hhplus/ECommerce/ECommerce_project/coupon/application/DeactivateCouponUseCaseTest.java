@@ -4,7 +4,7 @@ import io.hhplus.ECommerce.ECommerce_project.common.exception.CouponException;
 import io.hhplus.ECommerce.ECommerce_project.common.exception.ErrorCode;
 import io.hhplus.ECommerce.ECommerce_project.coupon.domain.entity.Coupon;
 import io.hhplus.ECommerce.ECommerce_project.coupon.domain.enums.DiscountType;
-import io.hhplus.ECommerce.ECommerce_project.coupon.domain.repository.CouponRepository;
+import io.hhplus.ECommerce.ECommerce_project.coupon.domain.repository.CouponMemoryRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
@@ -19,12 +19,12 @@ import static org.mockito.Mockito.*;
 
 class DeactivateCouponUseCaseTest {
 
-    private CouponRepository couponRepository;
+    private CouponMemoryRepository couponRepository;
     private DeactivateCouponUseCase deactivateCouponUseCase;
 
     @BeforeEach
     void setUp() {
-        couponRepository = mock(CouponRepository.class);
+        couponRepository = mock(CouponMemoryRepository.class);
         deactivateCouponUseCase = new DeactivateCouponUseCase(couponRepository);
     }
 

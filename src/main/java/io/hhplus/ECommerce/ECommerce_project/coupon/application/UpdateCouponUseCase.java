@@ -35,6 +35,6 @@ public class UpdateCouponUseCase {
         coupon.updateDateRange(command.startDate(), command.endDate());
 
         // 3. 저장 후 반환
-        return couponRepository.save(coupon);
+        return coupon;
     }
 }

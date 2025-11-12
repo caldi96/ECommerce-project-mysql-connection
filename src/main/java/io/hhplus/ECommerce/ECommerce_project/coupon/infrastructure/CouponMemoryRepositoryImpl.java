@@ -2,8 +2,7 @@ package io.hhplus.ECommerce.ECommerce_project.coupon.infrastructure;
 
 import io.hhplus.ECommerce.ECommerce_project.common.SnowflakeIdGenerator;
 import io.hhplus.ECommerce.ECommerce_project.coupon.domain.entity.Coupon;
-import io.hhplus.ECommerce.ECommerce_project.coupon.domain.repository.CouponRepository;
-import io.hhplus.ECommerce.ECommerce_project.payment.domain.entity.Payment;
+import io.hhplus.ECommerce.ECommerce_project.coupon.domain.repository.CouponMemoryRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
@@ -13,7 +12,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 @Repository
 @RequiredArgsConstructor
-public class CouponMemoryRepository implements CouponRepository {
+public class CouponMemoryRepositoryImpl implements CouponMemoryRepository {
     private final Map<Long, Coupon> couponMap = new ConcurrentHashMap<>();
     private final Map<Long, Object> lockMap = new ConcurrentHashMap<>();
     private final SnowflakeIdGenerator idGenerator;
@@ -53,10 +52,10 @@ public class CouponMemoryRepository implements CouponRepository {
     }
 
     @Override
-    public List<Coupon> findAllByIsActiveTrueAndStartDateBeforeAndEndDateAfter(LocalDateTime now1, LocalDateTime now2) {
+    public List<Coupon> findAllByIsActiveTrueAndStartDateBeforeAndEndDateAfter(LocalDateTime now) {
         return couponMap.values().stream()
                 .filter(Coupon::isActive)
-                .filter(coupon -> coupon.getStartDate().isBefore(now1) && coupon.getEndDate().isAfter(now2))
+                .filter(coupon -> coupon.getStartDate().isBefore(now) && coupon.getEndDate().isAfter(now))
                 .toList();
     }
 

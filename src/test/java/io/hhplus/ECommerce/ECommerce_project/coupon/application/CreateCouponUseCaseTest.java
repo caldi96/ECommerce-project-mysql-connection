@@ -3,7 +3,7 @@ package io.hhplus.ECommerce.ECommerce_project.coupon.application;
 import io.hhplus.ECommerce.ECommerce_project.coupon.application.command.CreateCouponCommand;
 import io.hhplus.ECommerce.ECommerce_project.coupon.domain.entity.Coupon;
 import io.hhplus.ECommerce.ECommerce_project.coupon.domain.enums.DiscountType;
-import io.hhplus.ECommerce.ECommerce_project.coupon.domain.repository.CouponRepository;
+import io.hhplus.ECommerce.ECommerce_project.coupon.domain.repository.CouponMemoryRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
@@ -16,12 +16,12 @@ import static org.mockito.Mockito.*;
 
 class CreateCouponUseCaseTest {
 
-    private CouponRepository couponRepository;
+    private CouponMemoryRepository couponRepository;
     private CreateCouponUseCase createCouponUseCase;
 
     @BeforeEach
     void setUp() {
-        couponRepository = mock(CouponRepository.class);
+        couponRepository = mock(CouponMemoryRepository.class);
         createCouponUseCase = new CreateCouponUseCase(couponRepository);
     }
 

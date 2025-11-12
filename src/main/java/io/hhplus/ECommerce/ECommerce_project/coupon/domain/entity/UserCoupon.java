@@ -1,36 +1,56 @@
 package io.hhplus.ECommerce.ECommerce_project.coupon.domain.entity;
 
+import io.hhplus.ECommerce.ECommerce_project.common.entity.BaseEntity;
 import io.hhplus.ECommerce.ECommerce_project.common.exception.CouponException;
 import io.hhplus.ECommerce.ECommerce_project.common.exception.ErrorCode;
 import io.hhplus.ECommerce.ECommerce_project.coupon.domain.enums.UserCouponStatus;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import io.hhplus.ECommerce.ECommerce_project.user.domain.entity.User;
+import jakarta.persistence.*;
+import lombok.*;
 
 import java.time.LocalDateTime;
 
+@Entity
+@Table(name = "user_coupons",
+        indexes = {
+                @Index(name = "idx_user_coupon", columnList = "user_id, coupon_id"),
+                @Index(name = "idx_user_status", columnList = "user_id, status"),
+        },
+        uniqueConstraints = {   // 선착순 쿠폰이 한 사람에게 2장 이상 중복 발급되지 않도록 유니크 제약 조건 걺
+                @UniqueConstraint(
+                        name = "uk_user_coupon",           // 제약 조건 이름
+                        columnNames = {"user_id", "coupon_id"}  // user_id와 coupon_id 조합이 유니크
+                )
+        }
+)
 @Getter
 @Setter
-@NoArgsConstructor
-@AllArgsConstructor
-public class UserCoupon {
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
+public class UserCoupon extends BaseEntity {
 
-    private Long id;
-    // 나중에 JPA 연결 시
-    // @ManyToOne(fetch = FetchType.LAZY)
-    // @JoinColumn(name = "coupon_id")
-    // private Coupon coupon;
-    private Long couponId;
-    // 나중에 JPA 연결 시
-    // @ManyToOne(fetch = FetchType.LAZY)
-    // @JoinColumn(name = "user_id")
-    // private User user;
-    private Long userId;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "coupon_id", nullable = false)
+    private Coupon coupon;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id", nullable = false)
+    private User user;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
     private UserCouponStatus status;    // ACTIVE, USED, EXPIRED
+
+    @Column(name = "used_count", nullable = false)
     private int usedCount;              // 현재 유저가 사용한 횟수
+
+    @Column(name = "used_at")
     private LocalDateTime usedAt;
+
+    @Column(name = "expired_at")
     private LocalDateTime expiredAt;
+
+    @Column(name = "issued_at")
     private LocalDateTime issuedAt;
 
     // ===== 정적 팩토리 메서드 =====
@@ -38,13 +58,12 @@ public class UserCoupon {
     /**
      * 쿠폰 발급
      */
-    public static UserCoupon issueCoupon(Long userId, Long couponId) {
+    public static UserCoupon issueCoupon(User user, Coupon coupon) {
         LocalDateTime now = LocalDateTime.now();
 
         return new UserCoupon(
-            null,                           // id는 저장 시 생성
-            couponId,
-            userId,
+            coupon,
+            user,
             UserCouponStatus.AVAILABLE,     // 발급 시 사용 가능 상태
             0,                              // usedCount (초기값 0)
             null,                           // usedAt (아직 사용 안 함)

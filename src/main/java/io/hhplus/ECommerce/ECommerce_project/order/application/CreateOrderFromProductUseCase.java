@@ -104,7 +104,7 @@ public class CreateOrderFromProductUseCase {
         if (command.couponId() != null) {
             // 7-1. 사용자 쿠폰 조회 (미리 발급받아야 함 - 선착순 쿠폰 발급)
             UserCoupon userCoupon = userCouponRepository
-                    .findByUserIdAndCouponId(command.userId(), command.couponId())
+                    .findByUser_IdAndCoupon_Id(command.userId(), command.couponId())
                     .orElseThrow(() -> new CouponException(ErrorCode.USER_COUPON_NOT_FOUND));
 
             // 7-2. 쿠폰 조회 및 검증

@@ -7,8 +7,8 @@ import io.hhplus.ECommerce.ECommerce_project.coupon.application.command.IssueCou
 import io.hhplus.ECommerce.ECommerce_project.coupon.domain.entity.Coupon;
 import io.hhplus.ECommerce.ECommerce_project.coupon.domain.entity.UserCoupon;
 import io.hhplus.ECommerce.ECommerce_project.coupon.domain.enums.DiscountType;
-import io.hhplus.ECommerce.ECommerce_project.coupon.domain.repository.CouponRepository;
-import io.hhplus.ECommerce.ECommerce_project.coupon.domain.repository.UserCouponRepository;
+import io.hhplus.ECommerce.ECommerce_project.coupon.domain.repository.CouponMemoryRepository;
+import io.hhplus.ECommerce.ECommerce_project.coupon.domain.repository.UserCouponMemoryRepository;
 import io.hhplus.ECommerce.ECommerce_project.order.application.CreateOrderFromProductUseCase;
 import io.hhplus.ECommerce.ECommerce_project.order.application.command.CreateOrderFromProductCommand;
 import io.hhplus.ECommerce.ECommerce_project.product.domain.entity.Product;
@@ -47,10 +47,10 @@ public class CouponConcurrencyTest {
     private CreateOrderFromProductUseCase createOrderFromProductUseCase;
 
     @Autowired
-    private CouponRepository couponRepository;
+    private CouponMemoryRepository couponRepository;
 
     @Autowired
-    private UserCouponRepository userCouponRepository;
+    private UserCouponMemoryRepository userCouponRepository;
 
     @Autowired
     private ProductRepositoryInMemory productRepository;

@@ -16,7 +16,7 @@ public class ActivateCouponUseCase {
 
     @Transactional
     public Coupon execute(Long id) {
-        // 1. 마스터 쿠폰 조회
+        // 1. 쿠폰 마스터 조회
         Coupon coupon = couponRepository.findById(id)
                 .orElseThrow(() -> new CouponException(ErrorCode.COUPON_NOT_FOUND));
 
@@ -24,6 +24,6 @@ public class ActivateCouponUseCase {
         coupon.activate();
 
         // 3.저장 후 반환
-        return couponRepository.save(coupon);
+        return coupon;
     }
 }

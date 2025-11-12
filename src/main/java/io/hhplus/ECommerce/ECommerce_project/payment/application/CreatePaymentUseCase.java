@@ -140,7 +140,7 @@ public class CreatePaymentUseCase {
                 try {
                     // 사용자 쿠폰 조회
                     UserCoupon userCoupon = userCouponRepository
-                            .findByUserIdAndCouponId(order.getUserId(), order.getCouponId())
+                            .findByUser_IdAndCoupon_Id(order.getUserId(), order.getCouponId())
                             .orElse(null);
 
                     // 쿠폰 정보 조회

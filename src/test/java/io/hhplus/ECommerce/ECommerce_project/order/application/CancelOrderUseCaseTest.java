@@ -3,8 +3,8 @@ package io.hhplus.ECommerce.ECommerce_project.order.application;
 import io.hhplus.ECommerce.ECommerce_project.common.exception.*;
 import io.hhplus.ECommerce.ECommerce_project.coupon.domain.entity.Coupon;
 import io.hhplus.ECommerce.ECommerce_project.coupon.domain.entity.UserCoupon;
-import io.hhplus.ECommerce.ECommerce_project.coupon.domain.repository.CouponRepository;
-import io.hhplus.ECommerce.ECommerce_project.coupon.domain.repository.UserCouponRepository;
+import io.hhplus.ECommerce.ECommerce_project.coupon.domain.repository.CouponMemoryRepository;
+import io.hhplus.ECommerce.ECommerce_project.coupon.domain.repository.UserCouponMemoryRepository;
 import io.hhplus.ECommerce.ECommerce_project.order.application.command.CancelOrderCommand;
 import io.hhplus.ECommerce.ECommerce_project.order.domain.entity.OrderItem;
 import io.hhplus.ECommerce.ECommerce_project.order.domain.entity.Orders;
@@ -41,9 +41,9 @@ class CancelOrderUseCaseTest {
     @Mock
     private ProductRepositoryInMemory productRepository;
     @Mock
-    private CouponRepository couponRepository;
+    private CouponMemoryRepository couponRepository;
     @Mock
-    private UserCouponRepository userCouponRepository;
+    private UserCouponMemoryRepository userCouponRepository;
     @Mock
     private PointMemoryRepository pointRepository;
     @Mock

@@ -7,8 +7,8 @@ import io.hhplus.ECommerce.ECommerce_project.coupon.domain.entity.Coupon;
 import io.hhplus.ECommerce.ECommerce_project.coupon.domain.entity.UserCoupon;
 import io.hhplus.ECommerce.ECommerce_project.coupon.domain.enums.DiscountType;
 import io.hhplus.ECommerce.ECommerce_project.coupon.domain.enums.UserCouponStatus;
-import io.hhplus.ECommerce.ECommerce_project.coupon.domain.repository.CouponRepository;
-import io.hhplus.ECommerce.ECommerce_project.coupon.domain.repository.UserCouponRepository;
+import io.hhplus.ECommerce.ECommerce_project.coupon.domain.repository.CouponMemoryRepository;
+import io.hhplus.ECommerce.ECommerce_project.coupon.domain.repository.UserCouponMemoryRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -26,10 +26,10 @@ import static org.mockito.Mockito.*;
 class IssueCouponUseCaseTest {
 
     @Mock
-    private CouponRepository couponRepository;
+    private CouponMemoryRepository couponRepository;
 
     @Mock
-    private UserCouponRepository userCouponRepository;
+    private UserCouponMemoryRepository userCouponRepository;
 
     @InjectMocks
     private IssueCouponUseCase issueCouponUseCase;
