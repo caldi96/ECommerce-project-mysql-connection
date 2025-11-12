@@ -3,7 +3,7 @@ package io.hhplus.ECommerce.ECommerce_project.order.infrastructure;
 import io.hhplus.ECommerce.ECommerce_project.common.SnowflakeIdGenerator;
 import io.hhplus.ECommerce.ECommerce_project.order.domain.entity.Orders;
 import io.hhplus.ECommerce.ECommerce_project.order.domain.enums.OrderStatus;
-import io.hhplus.ECommerce.ECommerce_project.order.domain.repository.OrderRepository;
+import io.hhplus.ECommerce.ECommerce_project.order.domain.repository.OrderMemoryRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
@@ -13,7 +13,7 @@ import java.util.stream.Collectors;
 
 @Repository
 @RequiredArgsConstructor
-public class OrderMemoryRepository implements OrderRepository {
+public class OrderMemoryRepositoryImpl implements OrderMemoryRepository {
     private final Map<Long, Orders> orderMap = new ConcurrentHashMap<>();
     private final Map<Long, Object> lockMap = new ConcurrentHashMap<>();  // 주문별 락 객체
     private final SnowflakeIdGenerator idGenerator;
@@ -61,7 +61,7 @@ public class OrderMemoryRepository implements OrderRepository {
     @Override
     public List<Orders> findByUserId(Long userId, OrderStatus orderStatus, int page, int size) {
         return orderMap.values().stream()
-                .filter(order -> order.getUserId().equals(userId))
+                .filter(order -> order.getUser().getId().equals(userId))
                 .filter(order -> orderStatus == null || order.getStatus() == orderStatus)
                 .sorted(Comparator.comparing(Orders::getCreatedAt).reversed()) // 최신순
                 .skip((long) page * size)
@@ -72,7 +72,7 @@ public class OrderMemoryRepository implements OrderRepository {
     @Override
     public long countByUserId(Long userId, OrderStatus orderStatus) {
         return orderMap.values().stream()
-                .filter(order -> order.getUserId().equals(userId))
+                .filter(order -> order.getUser().getId().equals(userId))
                 .filter(order -> orderStatus == null || order.getStatus() == orderStatus)
                 .count();
     }

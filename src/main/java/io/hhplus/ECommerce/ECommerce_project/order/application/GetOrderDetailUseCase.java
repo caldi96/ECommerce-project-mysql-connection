@@ -33,12 +33,12 @@ public class GetOrderDetailUseCase {
                 .orElseThrow(() -> new OrderException(ErrorCode.ORDER_NOT_FOUND));
 
         // 3. 주문 소유자 확인 (권한 체크)
-        if (!order.getUserId().equals(command.userId())) {
+        if (!order.getUser().getId().equals(command.userId())) {
             throw new OrderException(ErrorCode.ORDER_ACCESS_DENIED);
         }
 
         // 4. 주문 항목 조회 후 Response 생성
-        List<OrderItem> orderItemList = orderItemRepository.findByOrderId(command.orderId());
+        List<OrderItem> orderItemList = orderItemRepository.findByOrders_Id(command.orderId());
 
         return GetOrderDetailResponse.of(order, orderItemList);
     }

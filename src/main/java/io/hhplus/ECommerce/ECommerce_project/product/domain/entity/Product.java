@@ -305,6 +305,36 @@ public class Product extends BaseEntity {
     }
 
     /**
+     * 주문 가능 여부 검증 (예외 발생)
+     * - 주문이 불가능한 경우 구체적인 예외를 던짐
+     */
+    public void validateOrder(int quantity) {
+        // 1. 비활성 상품 체크
+        if (!this.isActive) {
+            throw new ProductException(ErrorCode.PRODUCT_NOT_ACTIVE,
+                    "비활성 상태의 상품은 주문할 수 없습니다.");
+        }
+
+        // 2. 재고 체크
+        if (this.stock < quantity) {
+            throw new ProductException(ErrorCode.PRODUCT_OUT_OF_STOCK,
+                    "재고가 부족합니다. 현재 재고: " + this.stock + ", 요청 수량: " + quantity);
+        }
+
+        // 3. 최소 주문량 체크
+        if (this.minOrderQuantity != null && quantity < this.minOrderQuantity) {
+            throw new ProductException(ErrorCode.PRODUCT_MIN_ORDER_QUANTITY_NOT_MET,
+                    "최소 주문 수량을 만족하지 않습니다. 최소 주문량: " + this.minOrderQuantity + ", 요청 수량: " + quantity);
+        }
+
+        // 4. 최대 주문량 체크
+        if (this.maxOrderQuantity != null && quantity > this.maxOrderQuantity) {
+            throw new ProductException(ErrorCode.PRODUCT_MAX_ORDER_QUANTITY_EXCEEDED,
+                    "최대 주문 수량을 초과했습니다. 최대 주문량: " + this.maxOrderQuantity + ", 요청 수량: " + quantity);
+        }
+    }
+
+    /**
      * 재고 있음 여부
      */
     public boolean hasStock() {

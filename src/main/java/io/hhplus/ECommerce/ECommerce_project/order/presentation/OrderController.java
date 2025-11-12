@@ -1,10 +1,6 @@
 package io.hhplus.ECommerce.ECommerce_project.order.presentation;
 
-import io.hhplus.ECommerce.ECommerce_project.order.application.CancelOrderUseCase;
-import io.hhplus.ECommerce.ECommerce_project.order.application.CreateOrderFromCartUseCase;
-import io.hhplus.ECommerce.ECommerce_project.order.application.CreateOrderFromProductUseCase;
-import io.hhplus.ECommerce.ECommerce_project.order.application.GetOrderDetailUseCase;
-import io.hhplus.ECommerce.ECommerce_project.order.application.GetOrderListUseCase;
+import io.hhplus.ECommerce.ECommerce_project.order.application.*;
 import io.hhplus.ECommerce.ECommerce_project.order.application.command.CancelOrderCommand;
 import io.hhplus.ECommerce.ECommerce_project.order.presentation.request.CreateOrderFromCartRequest;
 import io.hhplus.ECommerce.ECommerce_project.order.presentation.request.CreateOrderFromProductRequest;
@@ -18,8 +14,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.Objects;
 
 @RestController
 @RequestMapping("/api/orders")
@@ -70,7 +64,14 @@ public class OrderController {
                 page,
                 size
         );
-        GetOrderListResponse response = getOrderListUseCase.execute(request.toCommand());
+        var result = getOrderListUseCase.execute(request.toCommand());
+
+        GetOrderListResponse response = GetOrderListResponse.of(
+                result.getOrders(),
+                result.getPage(),
+                result.getSize(),
+                result.getTotalElements()
+        );
         return ResponseEntity.ok(response);
     }
 

@@ -3,8 +3,8 @@ package io.hhplus.ECommerce.ECommerce_project.order.application;
 import io.hhplus.ECommerce.ECommerce_project.order.application.command.CreateOrderFromProductCommand;
 import io.hhplus.ECommerce.ECommerce_project.order.domain.entity.OrderItem;
 import io.hhplus.ECommerce.ECommerce_project.order.domain.entity.Orders;
-import io.hhplus.ECommerce.ECommerce_project.order.domain.repository.OrderItemRepository;
-import io.hhplus.ECommerce.ECommerce_project.order.domain.repository.OrderRepository;
+import io.hhplus.ECommerce.ECommerce_project.order.domain.repository.OrderItemMemoryRepository;
+import io.hhplus.ECommerce.ECommerce_project.order.domain.repository.OrderMemoryRepository;
 import io.hhplus.ECommerce.ECommerce_project.order.presentation.response.CreateOrderFromCartResponse;
 import io.hhplus.ECommerce.ECommerce_project.point.domain.repository.PointMemoryRepository;
 import io.hhplus.ECommerce.ECommerce_project.product.domain.entity.Product;
@@ -29,10 +29,10 @@ import static org.mockito.Mockito.*;
 class CreateOrderFromProductUseCaseTest {
 
     @Mock
-    private OrderRepository orderRepository;
+    private OrderMemoryRepository orderRepository;
 
     @Mock
-    private OrderItemRepository orderItemRepository;
+    private OrderItemMemoryRepository orderItemRepository;
 
     @Mock
     private UserRepository userRepository;

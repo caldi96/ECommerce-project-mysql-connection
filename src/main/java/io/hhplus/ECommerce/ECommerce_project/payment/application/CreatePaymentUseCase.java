@@ -9,8 +9,8 @@ import io.hhplus.ECommerce.ECommerce_project.coupon.domain.repository.CouponRepo
 import io.hhplus.ECommerce.ECommerce_project.coupon.domain.repository.UserCouponRepository;
 import io.hhplus.ECommerce.ECommerce_project.order.domain.entity.OrderItem;
 import io.hhplus.ECommerce.ECommerce_project.order.domain.entity.Orders;
-import io.hhplus.ECommerce.ECommerce_project.order.domain.repository.OrderItemRepository;
-import io.hhplus.ECommerce.ECommerce_project.order.domain.repository.OrderRepository;
+import io.hhplus.ECommerce.ECommerce_project.order.domain.repository.OrderItemMemoryRepository;
+import io.hhplus.ECommerce.ECommerce_project.order.domain.repository.OrderMemoryRepository;
 import io.hhplus.ECommerce.ECommerce_project.payment.application.command.CreatePaymentCommand;
 import io.hhplus.ECommerce.ECommerce_project.payment.domain.entity.Payment;
 import io.hhplus.ECommerce.ECommerce_project.payment.domain.repository.PaymentRepository;
@@ -36,8 +36,8 @@ import java.util.Map;
 public class CreatePaymentUseCase {
 
     private final PaymentRepository paymentRepository;
-    private final OrderRepository orderRepository;
-    private final OrderItemRepository orderItemRepository;
+    private final OrderMemoryRepository orderRepository;
+    private final OrderItemMemoryRepository orderItemRepository;
     private final ProductRepository productRepository;
     private final CouponRepository couponRepository;
     private final UserCouponRepository userCouponRepository;

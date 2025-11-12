@@ -89,12 +89,13 @@ Table order_items {
     quantity int [not null]
     unit_price decimal(10,2) [not null]
     subtotal decimal(10,2) [not null] // quantity * unit_price
-    status varchar  // not null 주문완료, 주문취소, 반품, 환불, 구매확정
+    status varchar [not null] // 주문완료, 주문취소, 반품, 환불, 구매확정
     confirmed_at timestamp
     cancelled_at timestamp
     returned_at timestamp
     refunded_at timestamp
     created_at timestamp [not null, default: `now()`]
+    updated_at timestamp [not null, default: `now()`]
     indexes {
         (order_id)
         (product_id)

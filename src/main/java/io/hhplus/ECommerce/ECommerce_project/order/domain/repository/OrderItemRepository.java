@@ -1,19 +1,12 @@
 package io.hhplus.ECommerce.ECommerce_project.order.domain.repository;
 
 import io.hhplus.ECommerce.ECommerce_project.order.domain.entity.OrderItem;
+import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;
-import java.util.Optional;
 
-public interface OrderItemRepository {
+public interface OrderItemRepository extends JpaRepository<OrderItem, Long> {
 
-    OrderItem save(OrderItem orderItem);
-
-    Optional<OrderItem> findById(Long id);
-
-    List<OrderItem> findByOrderId(Long orderId);
-
-    List<OrderItem> findAll();
-
-    void deleteById(Long id);
+    // 주문 Id 로 주문항목 가져옴
+    List<OrderItem> findByOrders_Id(Long orderId);
 }

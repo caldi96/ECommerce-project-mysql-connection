@@ -4,7 +4,7 @@ import io.hhplus.ECommerce.ECommerce_project.order.application.CreateOrderFromPr
 import io.hhplus.ECommerce.ECommerce_project.order.application.command.CreateOrderFromProductCommand;
 import io.hhplus.ECommerce.ECommerce_project.order.domain.entity.Orders;
 import io.hhplus.ECommerce.ECommerce_project.order.domain.enums.OrderStatus;
-import io.hhplus.ECommerce.ECommerce_project.order.domain.repository.OrderRepository;
+import io.hhplus.ECommerce.ECommerce_project.order.domain.repository.OrderMemoryRepository;
 import io.hhplus.ECommerce.ECommerce_project.order.presentation.response.CreateOrderFromCartResponse;
 import io.hhplus.ECommerce.ECommerce_project.payment.application.CreatePaymentUseCase;
 import io.hhplus.ECommerce.ECommerce_project.payment.application.command.CreatePaymentCommand;
@@ -45,7 +45,7 @@ public class PaymentConcurrencyTest {
     private CreateOrderFromProductUseCase createOrderFromProductUseCase;
 
     @Autowired
-    private OrderRepository orderRepository;
+    private OrderMemoryRepository orderRepository;
 
     @Autowired
     private ProductRepositoryInMemory productRepository;

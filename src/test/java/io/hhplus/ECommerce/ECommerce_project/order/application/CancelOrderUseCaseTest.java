@@ -8,8 +8,8 @@ import io.hhplus.ECommerce.ECommerce_project.coupon.domain.repository.UserCoupon
 import io.hhplus.ECommerce.ECommerce_project.order.application.command.CancelOrderCommand;
 import io.hhplus.ECommerce.ECommerce_project.order.domain.entity.OrderItem;
 import io.hhplus.ECommerce.ECommerce_project.order.domain.entity.Orders;
-import io.hhplus.ECommerce.ECommerce_project.order.domain.repository.OrderItemRepository;
-import io.hhplus.ECommerce.ECommerce_project.order.domain.repository.OrderRepository;
+import io.hhplus.ECommerce.ECommerce_project.order.domain.repository.OrderItemMemoryRepository;
+import io.hhplus.ECommerce.ECommerce_project.order.domain.repository.OrderMemoryRepository;
 import io.hhplus.ECommerce.ECommerce_project.point.domain.entity.Point;
 import io.hhplus.ECommerce.ECommerce_project.point.domain.entity.PointUsageHistory;
 import io.hhplus.ECommerce.ECommerce_project.point.domain.repository.PointMemoryRepository;
@@ -35,9 +35,9 @@ import static org.mockito.Mockito.*;
 class CancelOrderUseCaseTest {
 
     @Mock
-    private OrderRepository orderRepository;
+    private OrderMemoryRepository orderRepository;
     @Mock
-    private OrderItemRepository orderItemRepository;
+    private OrderItemMemoryRepository orderItemRepository;
     @Mock
     private ProductRepositoryInMemory productRepository;
     @Mock

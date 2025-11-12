@@ -8,8 +8,8 @@ import java.util.List;
 public interface PointUsageHistoryRepository extends JpaRepository<PointUsageHistory, Long> {
 
     // 주문 id로 포인트 사용 목록 조회(취소되지 않은 것들만)
-    List<PointUsageHistory> findByOrderIdAndCanceledAtIsNull(Long orderId);
+    List<PointUsageHistory> findByOrders_IdAndCanceledAtIsNull(Long orderId);
 
     // 포인트 id로 포인트 사용 목록 조회(취소되지 않은 것들만)
-    List<PointUsageHistory> findByPointIdAndCanceledAtIsNull(Long pointId);
+    List<PointUsageHistory> findByPoint_IdAndCanceledAtIsNull(Long pointId);
 }

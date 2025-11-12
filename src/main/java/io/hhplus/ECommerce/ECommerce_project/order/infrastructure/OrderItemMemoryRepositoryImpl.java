@@ -2,8 +2,7 @@ package io.hhplus.ECommerce.ECommerce_project.order.infrastructure;
 
 import io.hhplus.ECommerce.ECommerce_project.common.SnowflakeIdGenerator;
 import io.hhplus.ECommerce.ECommerce_project.order.domain.entity.OrderItem;
-import io.hhplus.ECommerce.ECommerce_project.order.domain.repository.OrderItemRepository;
-import io.hhplus.ECommerce.ECommerce_project.product.domain.entity.Product;
+import io.hhplus.ECommerce.ECommerce_project.order.domain.repository.OrderItemMemoryRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
@@ -12,7 +11,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 @Repository
 @RequiredArgsConstructor
-public class OrderItemMemoryRepository implements OrderItemRepository {
+public class OrderItemMemoryRepositoryImpl implements OrderItemMemoryRepository {
     private final Map<Long, OrderItem> orderItemMap = new ConcurrentHashMap<>();
     private final SnowflakeIdGenerator idGenerator;
 
@@ -34,7 +33,7 @@ public class OrderItemMemoryRepository implements OrderItemRepository {
     @Override
     public List<OrderItem> findByOrderId(Long orderId) {
         return orderItemMap.values().stream()
-                .filter(orderItem -> Objects.equals(orderItem.getOrderId(), orderId))
+                .filter(orderItem -> Objects.equals(orderItem.getOrders().getId(), orderId))
                 .toList();
     }
 

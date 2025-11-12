@@ -139,9 +139,12 @@ public class Point extends BaseEntity {
      * @param amountToUse 사용할 금액
      */
     public void usePartially(BigDecimal amountToUse) {
+        // NOTE: 현재는 CHARGE와 REFUND만 존재하므로 타입 검증 불필요
+        /*
         if (this.pointType != PointType.CHARGE && this.pointType != PointType.REFUND) {
             throw new PointException(ErrorCode.POINT_ONLY_CHARGE_OR_REFUND_CAN_BE_USED);
         }
+         */
 
         if (this.isUsed) {
             throw new PointException(ErrorCode.POINT_ALREADY_USED);
@@ -202,9 +205,12 @@ public class Point extends BaseEntity {
      * @param amountToRestore 복구할 금액
      */
     public void restoreUsedAmount(BigDecimal amountToRestore) {
+        // NOTE: 현재는 CHARGE와 REFUND만 존재하므로 타입 검증 불필요
+        /*
         if (this.pointType != PointType.CHARGE && this.pointType != PointType.REFUND) {
             throw new PointException(ErrorCode.POINT_ONLY_CHARGE_OR_REFUND_CAN_BE_USED);
         }
+         */
 
         if (amountToRestore == null || amountToRestore.compareTo(BigDecimal.ZERO) <= 0) {
             throw new PointException(ErrorCode.POINT_AMOUNT_INVALID);

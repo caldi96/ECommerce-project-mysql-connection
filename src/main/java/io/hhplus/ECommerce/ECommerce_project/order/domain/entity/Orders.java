@@ -1,41 +1,66 @@
 package io.hhplus.ECommerce.ECommerce_project.order.domain.entity;
 
+import io.hhplus.ECommerce.ECommerce_project.common.entity.BaseEntity;
 import io.hhplus.ECommerce.ECommerce_project.common.exception.ErrorCode;
 import io.hhplus.ECommerce.ECommerce_project.common.exception.OrderException;
+import io.hhplus.ECommerce.ECommerce_project.coupon.domain.entity.Coupon;
 import io.hhplus.ECommerce.ECommerce_project.order.domain.enums.OrderStatus;
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import io.hhplus.ECommerce.ECommerce_project.user.domain.entity.User;
+import jakarta.persistence.*;
+import lombok.*;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
+@Entity
+@Table(name = "orders")
 @Getter
+@Setter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)  // JPA를 위한 기본 생성자
 @AllArgsConstructor(access = AccessLevel.PRIVATE)    // 정적 팩토리 메서드를 위한 private 생성자
-public class Orders {
+public class Orders extends BaseEntity {
 
-    private Long id;
-    // 나중에 JPA 연결 시
-    // @ManyToOne(fetch = FetchType.LAZY)
-    // @JoinColumn(name = "user_id")
-    // private User user;
-    private Long userId;
-    // 나중에 JPA 연결 시
-    // @ManyToOne(fetch = FetchType.LAZY)
-    // @JoinColumn(name = "coupon_id")
-    // private Coupon coupon;
-    private Long couponId;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id", nullable = false)
+    private User user;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "coupon_id", nullable = true)
+    private Coupon coupon;
+
+    @Column(name = "total_amount", nullable = false, precision = 10, scale = 2)
     private BigDecimal totalAmount;
+
+    @Column(name = "discount_amount", nullable = false, precision = 10, scale = 2)
     private BigDecimal discountAmount;
+
+    @Column(name = "final_amount", nullable = false, precision = 10, scale = 2)
     private BigDecimal finalAmount;
+
+    @Column(name = "shipping_fee", nullable = false, precision = 10, scale = 2)
     private BigDecimal shippingFee;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
     private OrderStatus status;
+
+    @Column(name = "point_amount", nullable = false, precision = 10, scale = 2)
     private BigDecimal pointAmount;
+
+    @CreationTimestamp
+    @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt;
+
+    @UpdateTimestamp
+    @Column(name = "updated_at", nullable = false)
     private LocalDateTime updatedAt;
+
+    @Column(name = "paid_at")
     private LocalDateTime paidAt;
+
+    @Column(name = "canceled_at")
     private LocalDateTime canceledAt;
 
     // ===== 정적 팩토리 메서드 =====
@@ -44,14 +69,14 @@ public class Orders {
      * 주문 생성
      */
     public static Orders createOrder(
-        Long userId,
+        User user,
+        Coupon coupon,
         BigDecimal totalAmount,
         BigDecimal shippingFee,
-        Long couponId,
         BigDecimal discountAmount,
         BigDecimal pointAmount
     ) {
-        validateUserId(userId);
+        validateUser(user);
         validateAmount(totalAmount, "총 상품 금액");
         validateAmount(shippingFee, "배송비");
 
@@ -77,17 +102,16 @@ public class Orders {
         LocalDateTime now = LocalDateTime.now();
 
         return new Orders(
-            null,  // id는 저장 시 생성
-            userId,
-            couponId,
+            user,
+            coupon,
             totalAmount,
             discount,
             finalAmount,
             shippingFee,
             OrderStatus.PENDING,  // 결제 대기 상태 (PENDING → PAID → COMPLETED)
             point,
-            now,   // createdAt
-            now,   // updatedAt
+            null,   // createdAt
+            null,   // updatedAt
             null,  // paidAt
             null   // canceledAt
         );
@@ -107,7 +131,6 @@ public class Orders {
         LocalDateTime now = LocalDateTime.now();
         this.status = OrderStatus.PAID;
         this.paidAt = now;
-        this.updatedAt = now;
     }
 
     /**
@@ -124,7 +147,6 @@ public class Orders {
         LocalDateTime now = LocalDateTime.now();
         this.status = OrderStatus.CANCELED;
         this.canceledAt = now;
-        this.updatedAt = now;
     }
 
     /**
@@ -139,7 +161,6 @@ public class Orders {
         LocalDateTime now = LocalDateTime.now();
         this.status = OrderStatus.CANCELED;
         this.canceledAt = now;
-        this.updatedAt = now;
     }
 
     /**
@@ -153,7 +174,6 @@ public class Orders {
 
         LocalDateTime now = LocalDateTime.now();
         this.status = OrderStatus.COMPLETED;
-        this.updatedAt = now;
     }
 
     /**
@@ -167,7 +187,6 @@ public class Orders {
 
         LocalDateTime now = LocalDateTime.now();
         this.status = OrderStatus.PAYMENT_FAILED;
-        this.updatedAt = now;
     }
 
     // ===== 상태 확인 메서드 =====
@@ -230,8 +249,8 @@ public class Orders {
 
     // ===== Validation 메서드 =====
 
-    private static void validateUserId(Long userId) {
-        if (userId == null) {
+    private static void validateUser(User user) {
+        if (user == null || user.getId() == null) {
             throw new OrderException(ErrorCode.ORDER_USER_ID_REQUIRED);
         }
     }
@@ -243,10 +262,5 @@ public class Orders {
         if (amount.compareTo(BigDecimal.ZERO) < 0) {
             throw new OrderException(ErrorCode.ORDER_AMOUNT_INVALID, fieldName + "은(는) 0 이상이어야 합니다.");
         }
-    }
-
-    // ===== 테스트를 위한 ID 설정 메서드 (인메모리 DB용) =====
-    public void setId(Long id) {
-        this.id = id;
     }
 }

@@ -45,7 +45,7 @@ public record GetOrderListResponse(
         public static OrderSummary from(Orders order) {
             return new OrderSummary(
                     order.getId(),
-                    order.getUserId(),
+                    order.getUser().getId(),
                     order.getTotalAmount(),
                     order.getShippingFee(),
                     order.getDiscountAmount(),

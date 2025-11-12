@@ -8,6 +8,7 @@ import io.hhplus.ECommerce.ECommerce_project.coupon.domain.repository.UserCoupon
 import io.hhplus.ECommerce.ECommerce_project.order.application.command.CancelOrderCommand;
 import io.hhplus.ECommerce.ECommerce_project.order.domain.entity.OrderItem;
 import io.hhplus.ECommerce.ECommerce_project.order.domain.entity.Orders;
+import io.hhplus.ECommerce.ECommerce_project.order.domain.enums.OrderItemStatus;
 import io.hhplus.ECommerce.ECommerce_project.order.domain.repository.OrderItemRepository;
 import io.hhplus.ECommerce.ECommerce_project.order.domain.repository.OrderRepository;
 import io.hhplus.ECommerce.ECommerce_project.point.domain.entity.Point;
@@ -45,7 +46,7 @@ public class CancelOrderUseCase {
                 .orElseThrow(() -> new OrderException(ErrorCode.ORDER_NOT_FOUND));
 
         // 2. 주문 소유자 확인
-        if (!order.getUserId().equals(command.userId())) {
+        if (!order.getUser().getId().equals(command.userId())) {
             throw new OrderException(ErrorCode.ORDER_NOT_FOUND,
                     "해당 주문에 대한 권한이 없습니다.");
         }
@@ -57,41 +58,37 @@ public class CancelOrderUseCase {
         }
 
         // 4. 주문 아이템 조회
-        List<OrderItem> orderItems = orderItemRepository.findByOrderId(command.orderId());
+        List<OrderItem> orderItems = orderItemRepository.findByOrders_Id(command.orderId());
 
-        // 5. 상품 재고 복구 (동시성 제어 적용)
+        // 5. 상품 재고 복구 (동시성 제어 적용, 여러 사람이 동시에 주문 취소시 재고 복구에 동시성 이슈 발생 가능)
         for (OrderItem orderItem : orderItems) {
-            // 락을 사용하여 재고 복구 (동시 취소 시 정확성 보장)
-            Product product = productRepository.restoreStockWithLock(
-                    orderItem.getProductId(),
-                    orderItem.getQuantity()
-            );
+            // 5-1. 주문 아이템의 상품 조회(비관적 락)
+            Product product = productRepository.findByIdWithLock(orderItem.getProduct().getId())
+                    .orElseThrow(() -> new ProductException(ErrorCode.PRODUCT_NOT_FOUND));
 
-            if (product == null) {
-                throw new ProductException(ErrorCode.PRODUCT_NOT_FOUND);
-            }
+            // 5-2. 해당 상품 재고 증가(복구)
+            product.increaseStock(orderItem.getQuantity());
         }
 
         // 6. 쿠폰 복구
-        if (order.getCouponId() != null) {
+        if (order.getCoupon() != null) {
             // 6-1. 사용자 쿠폰 조회
             UserCoupon userCoupon = userCouponRepository
-                    .findByUser_IdAndCoupon_Id(order.getUserId(), order.getCouponId())
+                    .findByUser_IdAndCoupon_Id(order.getUser().getId(), order.getCoupon().getId())
                     .orElseThrow(() -> new CouponException(ErrorCode.USER_COUPON_NOT_FOUND));
 
             // 6-2. 쿠폰 정보 조회
-            Coupon coupon = couponRepository.findById(order.getCouponId())
+            Coupon coupon = couponRepository.findById(order.getCoupon().getId())
                     .orElseThrow(() -> new CouponException(ErrorCode.COUPON_NOT_FOUND));
 
             // 6-3. 쿠폰 사용 취소 처리 (usedCount 감소)
             // issuedQuantity는 복구하지 않음 (한번 발급되면 영구적)
             userCoupon.cancelUse(coupon.getPerUserLimit());
-            userCouponRepository.save(userCoupon);
         }
 
         // 7. 포인트 복구 (PointUsageHistory 활용)
         List<PointUsageHistory> pointUsageHistories =
-                pointUsageHistoryRepository.findByOrderIdAndCanceledAtIsNull(command.orderId());
+                pointUsageHistoryRepository.findByOrders_IdAndCanceledAtIsNull(command.orderId());
 
         BigDecimal totalRestoredPoint = BigDecimal.ZERO;
 
@@ -102,11 +99,9 @@ public class CancelOrderUseCase {
 
             // 7-2. 사용한 포인트 금액만큼 복구
             originalPoint.restoreUsedAmount(history.getUsedAmount());
-            pointRepository.save(originalPoint);
 
             // 7-3. PointUsageHistory 취소 처리
             history.cancel();
-            pointUsageHistoryRepository.save(history);
 
             // 7-4. 복구할 총 포인트 금액 누적
             totalRestoredPoint = totalRestoredPoint.add(history.getUsedAmount());
@@ -118,10 +113,18 @@ public class CancelOrderUseCase {
                     .orElseThrow(() -> new UserException(ErrorCode.USER_NOT_FOUND));
 
             user.refundPoint(totalRestoredPoint);
-            userRepository.save(user);
         }
 
-        // 8. 주문 상태 변경
+        // 8-1. 주문 아이템 상태 변경
+        for (OrderItem orderItem : orderItems) {
+            if (orderItem.getStatus() == OrderItemStatus.ORDER_PENDING) {
+                orderItem.cancel();
+            } else if (orderItem.getStatus() == OrderItemStatus.ORDER_COMPLETED) {
+                orderItem.cancelAfterComplete();
+            }
+        }
+
+        // 8-2. 주문 상태 변경
         if (order.isPending()) {
             order.cancel();  // PENDING -> CANCELED (결제 전 주문 취소)
         } else if (order.isPaid()) {
@@ -129,7 +132,5 @@ public class CancelOrderUseCase {
         } else if (order.isPaymentFailed()) {
             order.cancel();  // PAYMENT_FAILED -> CANCELED (결제 실패 후 취소)
         }
-
-        orderRepository.save(order);
     }
 }

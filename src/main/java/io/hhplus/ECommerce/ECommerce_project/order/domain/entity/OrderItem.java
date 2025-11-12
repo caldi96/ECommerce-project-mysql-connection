@@ -1,42 +1,68 @@
 package io.hhplus.ECommerce.ECommerce_project.order.domain.entity;
 
+import io.hhplus.ECommerce.ECommerce_project.common.entity.BaseEntity;
 import io.hhplus.ECommerce.ECommerce_project.common.exception.ErrorCode;
 import io.hhplus.ECommerce.ECommerce_project.common.exception.OrderException;
 import io.hhplus.ECommerce.ECommerce_project.order.domain.enums.OrderItemStatus;
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import io.hhplus.ECommerce.ECommerce_project.product.domain.entity.Product;
+import jakarta.persistence.*;
+import lombok.*;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
+@Entity
+@Table(name = "order_items")
 @Getter
+@Setter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)  // JPA를 위한 기본 생성자
 @AllArgsConstructor(access = AccessLevel.PRIVATE)    // 정적 팩토리 메서드를 위한 private 생성자
-public class OrderItem {
+public class OrderItem extends BaseEntity {
 
-    private Long id;
-    // 나중에 JPA 연결 시
-    // @ManyToOne(fetch = FetchType.LAZY)
-    // @JoinColumn(name = "product_id")
-    // private Product product;
-    private Long productId;
-    // 나중에 JPA 연결 시
-    // @ManyToOne(fetch = FetchType.LAZY)
-    // @JoinColumn(name = "order_id")
-    // private Order order;
-    private Long orderId;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "product_id", nullable = false)
+    private Product product;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "order_id", nullable = false)
+    private Orders orders;
+
+    @Column(name = "product_name", nullable = false)
     private String productName;
+
+    @Column(nullable = false)
     private int quantity;
+
+    @Column(name = "unit_price", nullable = false, precision = 10, scale = 2)
     private BigDecimal unitPrice;
+
+    @Column(name = "sub_total", nullable = false, precision = 10, scale = 2)
     private BigDecimal subTotal;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
     private OrderItemStatus status;
+
+    @Column(name = "confirmed_at")
     private LocalDateTime confirmedAt;
+
+    @Column(name = "canceled_at")
     private LocalDateTime canceledAt;
+
+    @Column(name = "returned_at")
     private LocalDateTime returnedAt;
+
+    @Column(name = "refunded_at")
     private LocalDateTime refundedAt;
+
+    @CreationTimestamp
+    @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt;
+
+    @UpdateTimestamp
+    @Column(name = "updated_at", nullable = false)
     private LocalDateTime updatedAt;
 
     // ===== 정적 팩토리 메서드 =====
@@ -45,14 +71,14 @@ public class OrderItem {
      * 주문 항목 생성
      */
     public static OrderItem createOrderItem(
-        Long orderId,
-        Long productId,
+        Orders orders,
+        Product product,
         String productName,
         int quantity,
         BigDecimal unitPrice
     ) {
-        validateOrderId(orderId);
-        validateProductId(productId);
+        validateOrder(orders);
+        validateProduct(product);
         validateProductName(productName);
         validateQuantity(quantity);
         validateUnitPrice(unitPrice);
@@ -60,11 +86,9 @@ public class OrderItem {
         // subTotal 계산
         BigDecimal subTotal = unitPrice.multiply(BigDecimal.valueOf(quantity));
 
-        LocalDateTime now = LocalDateTime.now();
         return new OrderItem(
-            null,  // id는 저장 시 생성
-            productId,
-            orderId,
+            product,
+            orders,
             productName,
             quantity,
             unitPrice,
@@ -74,8 +98,8 @@ public class OrderItem {
             null,  // canceledAt
             null,  // returnedAt
             null,  // refundedAt
-            now,   // createdAt
-            now    // updatedAt
+            null,   // createdAt
+            null    // updatedAt
         );
     }
 
@@ -92,7 +116,6 @@ public class OrderItem {
 
         LocalDateTime now = LocalDateTime.now();
         this.status = OrderItemStatus.ORDER_COMPLETED;
-        this.updatedAt = now;
     }
 
     /**
@@ -107,7 +130,6 @@ public class OrderItem {
         LocalDateTime now = LocalDateTime.now();
         this.status = OrderItemStatus.ORDER_CANCELED;
         this.canceledAt = now;
-        this.updatedAt = now;
     }
 
     /**
@@ -122,7 +144,6 @@ public class OrderItem {
         LocalDateTime now = LocalDateTime.now();
         this.status = OrderItemStatus.ORDER_CANCELED;
         this.canceledAt = now;
-        this.updatedAt = now;
     }
 
     /**
@@ -137,7 +158,6 @@ public class OrderItem {
         LocalDateTime now = LocalDateTime.now();
         this.status = OrderItemStatus.ORDER_RETURNED;
         this.returnedAt = now;
-        this.updatedAt = now;
     }
 
     /**
@@ -152,7 +172,6 @@ public class OrderItem {
         LocalDateTime now = LocalDateTime.now();
         this.status = OrderItemStatus.ORDER_REFUNDED;
         this.refundedAt = now;
-        this.updatedAt = now;
     }
 
     /**
@@ -167,7 +186,6 @@ public class OrderItem {
         LocalDateTime now = LocalDateTime.now();
         this.status = OrderItemStatus.PURCHASE_CONFIRMED;
         this.confirmedAt = now;
-        this.updatedAt = now;
     }
 
     /**
@@ -178,7 +196,6 @@ public class OrderItem {
         validateQuantity(this.quantity);
 
         this.subTotal = this.unitPrice.multiply(BigDecimal.valueOf(this.quantity));
-        this.updatedAt = LocalDateTime.now();
     }
 
     // ===== 상태 확인 메서드 =====
@@ -243,14 +260,14 @@ public class OrderItem {
 
     // ===== Validation 메서드 =====
 
-    private static void validateOrderId(Long orderId) {
-        if (orderId == null) {
+    private static void validateOrder(Orders orders) {
+        if (orders == null || orders.getId() == null) {
             throw new OrderException(ErrorCode.ORDER_ITEM_ORDER_ID_REQUIRED);
         }
     }
 
-    private static void validateProductId(Long productId) {
-        if (productId == null) {
+    private static void validateProduct(Product product) {
+        if (product == null || product.getId() == null) {
             throw new OrderException(ErrorCode.ORDER_ITEM_PRODUCT_ID_REQUIRED);
         }
     }
@@ -274,10 +291,5 @@ public class OrderItem {
         if (unitPrice.compareTo(BigDecimal.ZERO) < 0) {
             throw new OrderException(ErrorCode.ORDER_ITEM_UNIT_PRICE_INVALID);
         }
-    }
-
-    // ===== 테스트를 위한 ID 설정 메서드 (인메모리 DB용) =====
-    public void setId(Long id) {
-        this.id = id;
     }
 }
