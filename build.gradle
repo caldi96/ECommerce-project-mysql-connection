@@ -39,6 +39,11 @@ dependencies {
 	// H2 Database for Testing
 	testImplementation 'com.h2database:h2'
 
+	// 기존 MySQL 드라이버, JPA 등은 그대로
+	// Flyway 마이그레이션 적용 -> 스키마 관리
+	// Flyway는 기본적으로 db/migration 폴더를 탐색
+	implementation 'org.flywaydb:flyway-mysql'
+
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 }
